@@ -6,7 +6,7 @@ export default function NotFound() {
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
       <h2 className="text-4xl font-bold mb-4">Demo Not Found</h2>
       <p className="text-muted-foreground mb-8 max-w-md">
-        The demo you're looking for doesn't exist or has been removed.
+        The demo you&apos;re looking for doesn&apos;t exist or has been removed.
       </p>
       <div className="flex gap-4">
         <Button asChild>

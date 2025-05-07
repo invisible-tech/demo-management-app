@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
     })
 
     return NextResponse.json(filteredDemos)
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching demos:", error)
     return NextResponse.json(
       { error: "Failed to fetch demos" },
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
     const demo = await createDemo(result.data)
 
     return NextResponse.json(demo, { status: 201 })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error creating demo:", error)
     return NextResponse.json(
       { error: "Failed to create demo" },

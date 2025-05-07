@@ -22,7 +22,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 
     return NextResponse.json(demo)
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(`Error fetching demo ${params.id}:`, error)
     return NextResponse.json(
       { error: "Failed to fetch demo" },
@@ -61,7 +61,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     const updatedDemo = await updateDemo(id, result.data)
 
     return NextResponse.json(updatedDemo)
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(`Error updating demo ${params.id}:`, error)
     return NextResponse.json(
       { error: "Failed to update demo" },
@@ -89,7 +89,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     await deleteDemo(id)
 
     return new NextResponse(null, { status: 204 })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(`Error deleting demo ${params.id}:`, error)
     return NextResponse.json(
       { error: "Failed to delete demo" },

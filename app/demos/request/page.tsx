@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
-import { createDemoSchema } from "@/lib/schema"
 import { Button } from "@/app/components/ui/button"
 
 // Create a form schema based on the demo schema but with only the fields needed for requesting

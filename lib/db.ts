@@ -1,4 +1,5 @@
 import { Redis } from "@upstash/redis"
+import { Demo } from "./schema"
 
 // You'll need to set these environment variables in your Vercel project
 // or locally in a .env.local file
@@ -47,7 +48,7 @@ export async function getDemoById(id: string) {
   }
 }
 
-export async function createDemo(demo: Record<string, any>) {
+export async function createDemo(demo: Partial<Demo>) {
   try {
     const id = crypto.randomUUID()
     const now = new Date().toISOString()
@@ -72,7 +73,7 @@ export async function createDemo(demo: Record<string, any>) {
   }
 }
 
-export async function updateDemo(id: string, updates: Record<string, any>) {
+export async function updateDemo(id: string, updates: Partial<Demo>) {
   try {
     // Check if demo exists
     const exists = await redis.exists(KEYS.DEMO_DETAIL(id))

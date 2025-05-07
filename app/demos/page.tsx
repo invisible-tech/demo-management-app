@@ -11,12 +11,13 @@ export const dynamic = "force-dynamic"
 export default async function DemosPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const status = typeof searchParams.status === "string" ? searchParams.status : undefined
-  const vertical = typeof searchParams.vertical === "string" ? searchParams.vertical : undefined
-  const assignedTo = typeof searchParams.assignedTo === "string" ? searchParams.assignedTo : undefined
-  const search = typeof searchParams.search === "string" ? searchParams.search : undefined
+  const params = await searchParams
+  const status = typeof params.status === "string" ? params.status : undefined
+  const vertical = typeof params.vertical === "string" ? params.vertical : undefined
+  const assignedTo = typeof params.assignedTo === "string" ? params.assignedTo : undefined
+  const search = typeof params.search === "string" ? params.search : undefined
 
   return (
     <div className="space-y-8">

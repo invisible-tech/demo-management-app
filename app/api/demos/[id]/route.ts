@@ -4,11 +4,11 @@ import { updateDemoSchema } from "@/lib/schema"
 
 // GET /api/demos/[id]
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     const demo = await getDemoById(id)
 
     if (!demo) {
@@ -20,7 +20,7 @@ export async function GET(
 
     return NextResponse.json(demo)
   } catch (error: unknown) {
-    console.error(`Error fetching demo ${params.id}:`, error)
+    console.error(`Error fetching demo:`, error)
     return NextResponse.json(
       { error: "Failed to fetch demo" },
       { status: 500 }
@@ -30,11 +30,11 @@ export async function GET(
 
 // PATCH /api/demos/[id]
 export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
 
     // Validate update data
@@ -62,7 +62,7 @@ export async function PATCH(
 
     return NextResponse.json(updatedDemo)
   } catch (error: unknown) {
-    console.error(`Error updating demo ${params.id}:`, error)
+    console.error(`Error updating demo:`, error)
     return NextResponse.json(
       { error: "Failed to update demo" },
       { status: 500 }
@@ -72,11 +72,11 @@ export async function PATCH(
 
 // DELETE /api/demos/[id]
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     // Check if demo exists
     const existingDemo = await getDemoById(id)
@@ -93,7 +93,7 @@ export async function DELETE(
 
     return new NextResponse(null, { status: 204 })
   } catch (error: unknown) {
-    console.error(`Error deleting demo ${params.id}:`, error)
+    console.error(`Error deleting demo:`, error)
     return NextResponse.json(
       { error: "Failed to delete demo" },
       { status: 500 }

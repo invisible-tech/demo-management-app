@@ -6,13 +6,14 @@ import { Demo } from "@/lib/schema"
 import { Button } from "@/app/components/ui/button"
 
 interface DemoDetailPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default async function DemoDetailPage({ params }: DemoDetailPageProps) {
-  const demo = await getDemoById(params.id) as Demo | null
+  const { id } = await params
+  const demo = await getDemoById(id) as Demo | null
   
   if (!demo) {
     notFound()

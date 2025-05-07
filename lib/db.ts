@@ -4,8 +4,8 @@ import { Demo } from "./schema"
 // You'll need to set these environment variables in your Vercel project
 // or locally in a .env.local file
 export const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL || "",
-  token: process.env.UPSTASH_REDIS_REST_TOKEN || "",
+  url: process.env.KV_REST_API_URL || "",
+  token: process.env.KV_REST_API_TOKEN || "",
 })
 
 // Keys for Redis 

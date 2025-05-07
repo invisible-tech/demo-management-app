@@ -1,0 +1,102 @@
+import { NextRequest, NextResponse } from "next/server"
+import { createDemo, getAllDemos } from "@/lib/db"
+import { createDemoSchema, filterDemoSchema, Demo } from "@/lib/schema"
+
+// GET /api/demos
+export async function GET(request: NextRequest) {
+  try {
+    // Get filter parameters from query string
+    const url = new URL(request.url)
+    const status = url.searchParams.get("status") || undefined
+    const vertical = url.searchParams.get("vertical") || undefined
+    const assignedTo = url.searchParams.get("assignedTo") || undefined
+    const search = url.searchParams.get("search") || undefined
+
+    // Validate filters
+    const filterResult = filterDemoSchema.safeParse({
+      status,
+      vertical,
+      assignedTo,
+      search,
+    })
+
+    if (!filterResult.success) {
+      return NextResponse.json(
+        { error: "Invalid filter parameters" },
+        { status: 400 }
+      )
+    }
+
+    // Get all demos
+    const allDemos = await getAllDemos() as Demo[]
+
+    // Apply filters
+    const filteredDemos = allDemos.filter((demo) => {
+      // Status filter
+      if (status && demo.status !== status) {
+        return false
+      }
+
+      // Vertical filter
+      if (vertical && demo.vertical !== vertical) {
+        return false
+      }
+
+      // Assigned to filter
+      if (assignedTo && demo.assignedTo !== assignedTo) {
+        return false
+      }
+
+      // Search filter (search in title, description, client, and useCase)
+      if (search) {
+        const searchLower = search.toLowerCase()
+        const titleMatch = demo.title?.toLowerCase().includes(searchLower)
+        const descMatch = demo.description?.toLowerCase().includes(searchLower)
+        const clientMatch = demo.client?.toLowerCase().includes(searchLower)
+        const useCaseMatch = demo.useCase?.toLowerCase().includes(searchLower)
+
+        if (!(titleMatch || descMatch || clientMatch || useCaseMatch)) {
+          return false
+        }
+      }
+
+      return true
+    })
+
+    return NextResponse.json(filteredDemos)
+  } catch (error: any) {
+    console.error("Error fetching demos:", error)
+    return NextResponse.json(
+      { error: "Failed to fetch demos" },
+      { status: 500 }
+    )
+  }
+}
+
+// POST /api/demos
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+
+    // Validate demo data
+    const result = createDemoSchema.safeParse(body)
+
+    if (!result.success) {
+      return NextResponse.json(
+        { error: "Invalid demo data", details: result.error.format() },
+        { status: 400 }
+      )
+    }
+
+    // Create demo
+    const demo = await createDemo(result.data)
+
+    return NextResponse.json(demo, { status: 201 })
+  } catch (error: any) {
+    console.error("Error creating demo:", error)
+    return NextResponse.json(
+      { error: "Failed to create demo" },
+      { status: 500 }
+    )
+  }
+} 

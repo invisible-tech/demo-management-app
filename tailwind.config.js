@@ -7,6 +7,7 @@ module.exports = {
     './app/**/*.{ts,tsx}',
     './lib/**/*.{ts,tsx}',
   ],
+  prefix: "",
   theme: {
     container: {
       center: true,

@@ -2,14 +2,11 @@ import { NextRequest, NextResponse } from "next/server"
 import { getDemoById, updateDemo, deleteDemo } from "@/lib/db"
 import { updateDemoSchema } from "@/lib/schema"
 
-interface RouteParams {
-  params: {
-    id: string
-  }
-}
-
 // GET /api/demos/[id]
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const { id } = params
     const demo = await getDemoById(id)
@@ -32,7 +29,10 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 }
 
 // PATCH /api/demos/[id]
-export async function PATCH(request: NextRequest, { params }: RouteParams) {
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const { id } = params
     const body = await request.json()
@@ -71,7 +71,10 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 }
 
 // DELETE /api/demos/[id]
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const { id } = params
 

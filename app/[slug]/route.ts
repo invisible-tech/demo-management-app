@@ -23,7 +23,7 @@ function rewriteHtml(html: string, baseUrl: string, originalOrigin: string, prox
       const ORIGINAL_ORIGIN = '${originalOrigin}';
       const SLUG = '${slug}';
       
-      // Intercept fetch requests to rewrite URLs
+      // Override the fetch function to proxy all requests
       const originalFetch = window.fetch;
       window.fetch = function(url, options) {
         if (typeof url === 'string') {
@@ -36,6 +36,10 @@ function rewriteHtml(html: string, baseUrl: string, originalOrigin: string, prox
           // Handle root-relative URLs
           else if (url.startsWith('/')) {
             url = API_BASE + '?slug=' + SLUG + '&path=' + encodeURIComponent(url);
+          }
+          // Handle paths starting with _next directly (Next.js specific)
+          else if (url.includes('/_next/')) {
+            url = API_BASE + '?slug=' + SLUG + '&path=' + encodeURIComponent('/' + url.split('/_next/')[1]);
           }
         }
         return originalFetch.call(this, url, options);
@@ -63,6 +67,30 @@ function rewriteHtml(html: string, baseUrl: string, originalOrigin: string, prox
       // Special handling for webpack/Next.js
       if (window.__NEXT_DATA__ || window.__webpack_require__) {
         console.log('Next.js application detected, fixing asset paths');
+        
+        // Add a global error handler to catch script loading errors
+        window.addEventListener('error', function(event) {
+          if (event.target && event.target.tagName === 'SCRIPT' && event.target.src) {
+            console.error('Script loading error:', event.target.src);
+            
+            // If the script has a URL pattern that looks like a Next.js asset but was loaded directly,
+            // it might be missing our proxy. Let's retry with our proxy.
+            if (event.target.src.includes('/_next/') && !event.target.src.includes('/api/asset')) {
+              const newSrc = API_BASE + '?slug=' + SLUG + '&path=' + 
+                             encodeURIComponent('/_next/' + event.target.src.split('/_next/')[1]);
+              console.log('Retrying with:', newSrc);
+              
+              // Create a new script element with our proxied URL
+              const newScript = document.createElement('script');
+              newScript.src = newSrc;
+              document.head.appendChild(newScript);
+              
+              // Prevent the default error handling
+              event.preventDefault();
+            }
+          }
+        }, true);
+        
         // For Next.js, fix publicPath for webpack
         if (window.__webpack_require__ && window.__webpack_require__.p) {
           const originalPublicPath = window.__webpack_require__.p;
@@ -71,7 +99,122 @@ function rewriteHtml(html: string, baseUrl: string, originalOrigin: string, prox
                                           originalPublicPath : '/' + originalPublicPath);
           console.log('Fixed webpack public path:', originalPublicPath, '->', window.__webpack_require__.p);
         }
+        
+        // Handle dynamically loaded scripts via Next.js
+        const originalDocument = document.createElement;
+        document.createElement = function(tagName) {
+          const element = originalDocument.call(document, tagName);
+          
+          if (tagName.toLowerCase() === 'script') {
+            const originalSetAttribute = element.setAttribute;
+            element.setAttribute = function(name, value) {
+              if (name === 'src' && typeof value === 'string') {
+                // Handle _next paths for scripts
+                if (value.includes('/_next/') && !value.includes('/api/asset')) {
+                  const newValue = API_BASE + '?slug=' + SLUG + '&path=' + 
+                                 encodeURIComponent('/_next/' + value.split('/_next/')[1]);
+                  console.log('Rewriting script src:', value, '->', newValue);
+                  value = newValue;
+                }
+              }
+              return originalSetAttribute.call(this, name, value);
+            };
+          }
+          
+          return element;
+        };
       }
+      
+      // Handle dynamically inserted images and videos
+      // This uses a MutationObserver to watch for new elements added to the DOM
+      const mediaObserver = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'childList') {
+            mutation.addedNodes.forEach(function(node) {
+              if (node.nodeType === 1) { // Element node
+                // Process the element and its children
+                processMediaElements(node);
+              }
+            });
+          }
+        });
+      });
+      
+      // Start observing the document body for DOM changes
+      mediaObserver.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+      
+      // Function to find and process media elements
+      function processMediaElements(rootElement) {
+        // Handle IMG elements
+        const images = rootElement.querySelectorAll ? rootElement.querySelectorAll('img') : [];
+        for (let i = 0; i < images.length; i++) {
+          const img = images[i];
+          if (img.src && !img.src.includes('/api/asset') && !img.hasAttribute('data-proxied')) {
+            img.setAttribute('data-proxied', 'true');
+            
+            if (img.src.startsWith('http')) {
+              // For absolute URLs
+              const urlObj = new URL(img.src);
+              img.src = API_BASE + '?slug=' + SLUG + '&path=' + encodeURIComponent(urlObj.pathname);
+            } else if (img.src.startsWith('/')) {
+              // For root-relative URLs
+              img.src = API_BASE + '?slug=' + SLUG + '&path=' + encodeURIComponent(img.src);
+            } else {
+              // For relative URLs
+              img.src = API_BASE + '?slug=' + SLUG + '&path=/' + encodeURIComponent(img.src);
+            }
+          }
+        }
+        
+        // Handle VIDEO elements
+        const videos = rootElement.querySelectorAll ? rootElement.querySelectorAll('video') : [];
+        for (let i = 0; i < videos.length; i++) {
+          const video = videos[i];
+          
+          // Handle video source elements
+          const sources = video.querySelectorAll('source');
+          for (let j = 0; j < sources.length; j++) {
+            const source = sources[j];
+            if (source.src && !source.src.includes('/api/asset') && !source.hasAttribute('data-proxied')) {
+              source.setAttribute('data-proxied', 'true');
+              
+              if (source.src.startsWith('http')) {
+                const urlObj = new URL(source.src);
+                source.src = API_BASE + '?slug=' + SLUG + '&path=' + encodeURIComponent(urlObj.pathname);
+              } else if (source.src.startsWith('/')) {
+                source.src = API_BASE + '?slug=' + SLUG + '&path=' + encodeURIComponent(source.src);
+              } else {
+                source.src = API_BASE + '?slug=' + SLUG + '&path=/' + encodeURIComponent(source.src);
+              }
+            }
+          }
+          
+          // Also check the video src attribute
+          if (video.src && !video.src.includes('/api/asset') && !video.hasAttribute('data-proxied')) {
+            video.setAttribute('data-proxied', 'true');
+            
+            if (video.src.startsWith('http')) {
+              const urlObj = new URL(video.src);
+              video.src = API_BASE + '?slug=' + SLUG + '&path=' + encodeURIComponent(urlObj.pathname);
+            } else if (video.src.startsWith('/')) {
+              video.src = API_BASE + '?slug=' + SLUG + '&path=' + encodeURIComponent(video.src);
+            } else {
+              video.src = API_BASE + '?slug=' + SLUG + '&path=/' + encodeURIComponent(video.src);
+            }
+          }
+        }
+      }
+      
+      // Run once on page load to process initial media elements
+      document.addEventListener('DOMContentLoaded', function() {
+        processMediaElements(document.body);
+      });
+      
+      // Also run immediately in case DOM is already loaded
+      processMediaElements(document.body);
     </script>`;
     
     // Create a simpler version that focuses on the key transformations
@@ -107,9 +250,8 @@ export async function GET(
   context: { params: { slug: string } }
 ) {
   try {
-    // Make sure to correctly destructure params from context
-    const { params } = context;
-    const slug = params.slug;
+    // Use a proper async/await approach for params
+    const slug = context.params.slug;
     console.log(`[SlugRoute] Processing slug: "${slug}"`);
   
     // Regular slug handling

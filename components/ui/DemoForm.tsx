@@ -211,7 +211,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
               value={formData.slug}
               onChange={handleTextChange}
               sx={{ mt: 3 }}
-              helperText="A URL-friendly identifier for the demo"
+              helperText="A URL-friendly identifier - this demo will be accessible at /demos/[slug]"
             />
           )}
           
@@ -261,22 +261,6 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
             </>
           ) : (
             <>
-              <FormControl component="fieldset" sx={{ mb: 3 }} fullWidth>
-                <FormLabel component="legend">Demo Status</FormLabel>
-                <RadioGroup 
-                  row 
-                  name="status"
-                  value={formData.status}
-                  onChange={handleTextChange}
-                >
-                  <FormControlLabel value="requested" control={<Radio />} label="Requested" />
-                  <FormControlLabel value="in_progress" control={<Radio />} label="In Progress" />
-                  <FormControlLabel value="ready" control={<Radio />} label="Ready" />
-                  <FormControlLabel value="delivered" control={<Radio />} label="Delivered" />
-                  <FormControlLabel value="archived" control={<Radio />} label="Archived" />
-                </RadioGroup>
-              </FormControl>
-              
               <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, mb: 3 }}>
                 <TextField
                   name="assignedTo"

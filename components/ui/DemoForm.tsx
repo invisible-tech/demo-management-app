@@ -232,9 +232,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         <FormDivider />
         
         <FormSection>
-          <Typography variant="h6" gutterBottom>
-            {isRequest ? 'Request Details' : 'Demo Details'}
-          </Typography>
+
           
           {isRequest ? (
             <>

@@ -4,9 +4,25 @@ import { Demo } from "./schema"
 // You'll need to set these environment variables in your Vercel project
 // or locally in a .env.local file
 export const redis = new Redis({
-  url: process.env.KV_REST_API_URL || "",
-  token: process.env.KV_REST_API_TOKEN || "",
+  url: process.env.KV_REST_API_URL || "https://missing-url.upstash.io",
+  token: process.env.KV_REST_API_TOKEN || "missing-token",
 })
+
+// Helper to check Redis connection
+export async function checkRedisConnection() {
+  try {
+    // Simple ping to check if Redis is available
+    await redis.ping();
+    return { success: true, message: "Redis connection successful" };
+  } catch (error: any) {
+    console.error("Redis connection error:", error);
+    return { 
+      success: false, 
+      message: "Redis connection failed", 
+      error: error.message 
+    };
+  }
+}
 
 // Keys for Redis 
 export const KEYS = {

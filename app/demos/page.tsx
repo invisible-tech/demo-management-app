@@ -1,10 +1,8 @@
 import { Suspense } from "react"
-import Link from "next/link"
 import { getAllDemos } from "@/lib/db"
-import { Button } from "@/app/components/ui/button"
-import DemoList from "../../components/DemoList"
-import DemoFilters from "../../components/DemoFilters"
 import { Demo } from "@/lib/schema"
+import { Box, Typography, Container, Paper } from '@mui/material';
+import DemoTable from "@/components/ui/DemoTable"
 
 export const dynamic = "force-dynamic"
 
@@ -20,25 +18,17 @@ export default async function DemosPage({
   const search = typeof params.search === "string" ? params.search : undefined
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold mb-1">All Demos</h1>
-          <p className="text-muted-foreground">Browse, search, and filter all available demos</p>
-        </div>
-        <Button asChild>
-          <Link href="/demos/request">Request New Demo</Link>
-        </Button>
-      </div>
+    <Box sx={{ my: 4 }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
+          All Demos
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Browse, search, and filter all available demos
+        </Typography>
+      </Box>
 
-      <DemoFilters 
-        status={status} 
-        vertical={vertical} 
-        assignedTo={assignedTo} 
-        search={search}
-      />
-
-      <Suspense fallback={<div>Loading demos...</div>}>
+      <Suspense fallback={<Box sx={{ textAlign: 'center', py: 4 }}>Loading demos...</Box>}>
         <DemoListWrapper 
           status={status}
           vertical={vertical}
@@ -46,7 +36,7 @@ export default async function DemosPage({
           search={search}
         />
       </Suspense>
-    </div>
+    </Box>
   )
 }
 
@@ -85,5 +75,24 @@ async function DemoListWrapper({
     return true
   })
 
-  return <DemoList demos={filteredDemos} />
+  // Extract unique values for filter dropdowns
+  const verticals = Array.from(new Set(allDemos.map(demo => demo.vertical).filter(Boolean) as string[]));
+  const clients = Array.from(new Set(allDemos.map(demo => demo.client).filter(Boolean) as string[]));
+  const statuses = Array.from(new Set(allDemos.map(demo => demo.status).filter(Boolean) as string[]));
+
+  return filteredDemos.length ? (
+    <DemoTable 
+      demos={filteredDemos} 
+      verticals={verticals}
+      clients={clients}
+      statuses={statuses}
+    />
+  ) : (
+    <Box sx={{ textAlign: 'center', py: 4 }}>
+      <Typography variant="h6" gutterBottom>No demos found</Typography>
+      <Typography color="text.secondary" paragraph>
+        Try adjusting your filters or creating a new demo.
+      </Typography>
+    </Box>
+  );
 } 

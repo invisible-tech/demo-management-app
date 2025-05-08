@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { createDemo, getAllDemos } from "@/lib/db"
+import { createDemo, getAllDemos, checkRedisConnection } from "@/lib/db"
 import { createDemoSchema, filterDemoSchema, Demo } from "@/lib/schema"
 
 // GET /api/demos
@@ -77,25 +77,45 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
+    console.log("Received demo creation request:", body);
 
     // Validate demo data
     const result = createDemoSchema.safeParse(body)
 
     if (!result.success) {
+      console.error("Validation error:", result.error.format());
       return NextResponse.json(
         { error: "Invalid demo data", details: result.error.format() },
         { status: 400 }
       )
     }
 
-    // Create demo
-    const demo = await createDemo(result.data)
+    // Check Redis connection before attempting to create
+    const connectionCheck = await checkRedisConnection();
+    if (!connectionCheck.success) {
+      console.error("Redis connection check failed:", connectionCheck);
+      return NextResponse.json(
+        { error: "Database connection error: " + connectionCheck.error },
+        { status: 503 }
+      )
+    }
 
-    return NextResponse.json(demo, { status: 201 })
-  } catch (error: unknown) {
-    console.error("Error creating demo:", error)
+    try {
+      // Create demo
+      const demo = await createDemo(result.data)
+      console.log("Demo created successfully:", demo.id);
+      return NextResponse.json(demo, { status: 201 })
+    } catch (dbError: any) {
+      console.error("Database error creating demo:", dbError);
+      return NextResponse.json(
+        { error: "Database error: " + (dbError.message || "Unknown database error") },
+        { status: 500 }
+      )
+    }
+  } catch (error: any) {
+    console.error("Error creating demo:", error);
     return NextResponse.json(
-      { error: "Failed to create demo" },
+      { error: "Failed to create demo: " + (error.message || "Unknown error") },
       { status: 500 }
     )
   }

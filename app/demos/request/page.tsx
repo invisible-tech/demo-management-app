@@ -2,17 +2,16 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
-import { Button } from "@/app/components/ui/button"
+import { Typography, Box } from '@mui/material';
+import DemoForm from "@/components/ui/DemoForm"
 
 // Create a form schema based on the demo schema but with only the fields needed for requesting
 const requestDemoSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
-  client: z.string().optional(),
+  title: z.string().optional().default("Demo Request"),
+  description: z.string().min(1, "Description is required"),
+  client: z.string().min(1, "Requested by is required"),
   useCase: z.string().optional(),
   vertical: z.string().optional(),
   dueDate: z.string().optional(),
@@ -23,29 +22,11 @@ type RequestDemoFormData = z.infer<typeof requestDemoSchema>
 export default function RequestDemoPage() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<RequestDemoFormData>({
-    resolver: zodResolver(requestDemoSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      client: "",
-      useCase: "",
-      vertical: "",
-      dueDate: "",
-    },
-  })
 
-  // Verticals - this could come from an API in a real application
-  const verticals = ["Finance", "Healthcare", "Retail", "Technology", "Education"]
-
-  const onSubmit = async (data: RequestDemoFormData) => {
+  const handleSubmit = async (data: any) => {
     setIsSubmitting(true)
+    
+    console.log("Submitting demo request with data:", data);
     
     try {
       const response = await fetch("/api/demos", {
@@ -56,134 +37,49 @@ export default function RequestDemoPage() {
         body: JSON.stringify({
           ...data,
           status: "requested",
+          assignedTo: "n/a",
+          url: "",
+          authDetails: "",
         }),
       })
       
       if (!response.ok) {
-        throw new Error("Failed to create demo request")
+        const errorData = await response.json().catch(() => null);
+        console.error("Server response:", response.status, errorData);
+        
+        if (errorData?.error) {
+          throw new Error(errorData.error);
+        } else {
+          throw new Error(`Server error: ${response.status}`);
+        }
       }
       
       toast.success("Demo request submitted successfully")
-      reset()
       router.push("/demos?status=requested")
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error submitting demo request:", error)
-      toast.error("Failed to submit demo request. Please try again.")
+      toast.error(error.message || "Failed to submit demo request. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Request a Demo</h1>
-        <p className="text-muted-foreground">
+    <Box sx={{ my: 4, maxWidth: 800, mx: 'auto' }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
+          Request a Demo
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
           Fill out the form below to request a new demo for your client needs
-        </p>
-      </div>
+        </Typography>
+      </Box>
       
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="space-y-4">
-          {/* Title */}
-          <div>
-            <label htmlFor="title" className="block text-sm font-medium mb-1">
-              Demo Title <span className="text-destructive">*</span>
-            </label>
-            <input
-              id="title"
-              className="w-full p-2 border rounded-md"
-              {...register("title")}
-            />
-            {errors.title && (
-              <p className="mt-1 text-sm text-destructive">{errors.title.message}</p>
-            )}
-          </div>
-          
-          {/* Description */}
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium mb-1">
-              Description
-            </label>
-            <textarea
-              id="description"
-              rows={4}
-              className="w-full p-2 border rounded-md"
-              {...register("description")}
-            />
-          </div>
-          
-          {/* Client */}
-          <div>
-            <label htmlFor="client" className="block text-sm font-medium mb-1">
-              Client Name
-            </label>
-            <input
-              id="client"
-              className="w-full p-2 border rounded-md"
-              {...register("client")}
-            />
-          </div>
-          
-          {/* Use Case */}
-          <div>
-            <label htmlFor="useCase" className="block text-sm font-medium mb-1">
-              Use Case
-            </label>
-            <input
-              id="useCase"
-              className="w-full p-2 border rounded-md"
-              {...register("useCase")}
-            />
-          </div>
-          
-          {/* Vertical */}
-          <div>
-            <label htmlFor="vertical" className="block text-sm font-medium mb-1">
-              Vertical
-            </label>
-            <select
-              id="vertical"
-              className="w-full p-2 border rounded-md"
-              {...register("vertical")}
-            >
-              <option value="">Select a vertical</option>
-              {verticals.map((vertical) => (
-                <option key={vertical} value={vertical}>
-                  {vertical}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          {/* Due Date */}
-          <div>
-            <label htmlFor="dueDate" className="block text-sm font-medium mb-1">
-              Due Date
-            </label>
-            <input
-              id="dueDate"
-              type="date"
-              className="w-full p-2 border rounded-md"
-              {...register("dueDate")}
-            />
-          </div>
-        </div>
-        
-        <div className="flex justify-end gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.back()}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Submitting..." : "Submit Request"}
-          </Button>
-        </div>
-      </form>
-    </div>
+      <DemoForm 
+        type="request" 
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+      />
+    </Box>
   )
 } 

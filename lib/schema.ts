@@ -11,13 +11,14 @@ export const demoStatusEnum = [
 // Schema for demo data validation
 export const demoSchema = z.object({
   id: z.string(),
-  title: z.string().min(1, "Title is required"),
+  title: z.string().optional().default("Demo Request"),
+  slug: z.string().optional(),
   description: z.string().optional(),
   status: z.enum(demoStatusEnum).default("requested"),
   client: z.string().optional(),
   assignedTo: z.string().optional(),
   useCase: z.string().optional(),
-  url: z.string().url().optional().or(z.literal("")),
+  url: z.union([z.string().url(), z.literal("")]).optional(),
   authDetails: z.string().optional(),
   dueDate: z.string().optional(), // ISO date string
   createdAt: z.string(), // ISO date string

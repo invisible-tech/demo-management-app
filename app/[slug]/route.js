@@ -44,9 +44,13 @@ export async function GET(
     let targetUrl = matchingDemo.url || '';
     console.log(`[SlugRoute] Demo URL: ${targetUrl}`);
     
-    // Ensure the URL has a protocol
+    // Ensure the URL has a protocol and it's HTTPS
     if (!targetUrl.startsWith('http')) {
       targetUrl = 'https://' + targetUrl;
+    } else if (targetUrl.startsWith('http://')) {
+      // Convert HTTP to HTTPS
+      targetUrl = 'https://' + targetUrl.substring(7);
+      console.log(`[SlugRoute] Converted HTTP URL to HTTPS: ${targetUrl}`);
     }
     
     // Generate a unique cache-busting parameter for the iframe source

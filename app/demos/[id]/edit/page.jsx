@@ -4,19 +4,12 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Box, Typography, CircularProgress } from "@mui/material";
 import DemoForm from "@/components/ui/DemoForm";
-import { Demo } from "@/lib/schema";
 import { toast } from "sonner";
 
-interface EditDemoPageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default function EditDemoPage({ params }: EditDemoPageProps) {
+export default function EditDemoPage({ params }) {
   const router = useRouter();
   const { id } = params;
-  const [demo, setDemo] = useState<Demo | null>(null);
+  const [demo, setDemo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -43,7 +36,7 @@ export default function EditDemoPage({ params }: EditDemoPageProps) {
     fetchDemo();
   }, [id]);
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data) => {
     setIsSubmitting(true);
     
     try {
@@ -69,7 +62,7 @@ export default function EditDemoPage({ params }: EditDemoPageProps) {
       const updatedDemo = await response.json();
       toast.success("Demo updated successfully");
       router.push(`/demos/${id}`);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating demo:", error);
       toast.error(error.message || "Failed to update demo. Please try again.");
     } finally {

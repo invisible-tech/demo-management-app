@@ -3,7 +3,7 @@ import { redis, KEYS } from '@/lib/db';
 import { Demo } from '@/lib/schema';
 
 // Helper to rewrite HTML to replace absolute URLs
-function rewriteHtml(html: string, baseUrl: string, originalOrigin: string, proxyBase: string): string {
+function rewriteHtml(html, baseUrl, originalOrigin, proxyBase) {
   try {
     console.log(`[SlugRoute] Rewriting URLs from ${baseUrl} and ${originalOrigin} to ${proxyBase}`);
     
@@ -246,12 +246,11 @@ function rewriteHtml(html: string, baseUrl: string, originalOrigin: string, prox
 }
 
 export async function GET(
-  request: NextRequest,
-  context: { params: { slug: string } }
+  request,
+  { params }
 ) {
   try {
-    // Use a proper async/await approach for params
-    const slug = context.params.slug;
+    const { slug } = params;
     console.log(`[SlugRoute] Processing slug: "${slug}"`);
   
     // Regular slug handling
@@ -271,10 +270,10 @@ export async function GET(
     });
     
     const allDemos = await pipeline.exec();
-    console.log(`[SlugRoute] All slugs in database: ${allDemos.map((demo: any) => demo?.slug || "none")}`);
+    console.log(`[SlugRoute] All slugs in database: ${allDemos.map(demo => demo?.slug || "none")}`);
     
     // Find the demo with the matching slug
-    const matchingDemo = allDemos.find((demo: any) => demo?.slug === slug) as Demo | undefined;
+    const matchingDemo = allDemos.find(demo => demo?.slug === slug);
     
     if (!matchingDemo) {
       console.log(`[SlugRoute] No demo found with slug: ${slug}`);

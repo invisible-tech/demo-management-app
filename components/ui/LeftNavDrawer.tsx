@@ -66,7 +66,6 @@ const navigationItems: NavigationItem[] = [
   { label: 'Demo Status', href: '/demos/status', icon: <ListChecks size={20} /> },
   { label: 'Submit Demo', href: '/demos/submit', icon: <FileUp size={20} /> },
   { label: 'How to Demo', href: '/how-to-demo', icon: <BookOpen size={20} /> },
-  { label: 'Admin', href: '/admin', icon: <Settings size={20} /> },
 ];
 
 export default function LeftNavDrawer() {

@@ -159,6 +159,10 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         assignedTo: formData.assignedTo,
         url: formData.url,
         authDetails: formData.authDetails,
+        slug: formData.slug,
+        vertical: formData.vertical,
+        useCase: formData.useCase,
+        client: formData.requestedBy
       };
     }
     
@@ -197,7 +201,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
             />
           </Box>
 
-          {isEdit && (
+          {(isEdit || type === 'submit') && (
             <TextField
               name="slug"
               label="Slug (optional)"

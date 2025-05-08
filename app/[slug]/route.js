@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { redis, KEYS } from '@/lib/db';
 
+// Set Cache-Control header to prevent browser caching
+export const revalidate = 0;
+
 export async function GET(
   request,
   { params }
@@ -46,8 +49,11 @@ export async function GET(
       targetUrl = 'https://' + targetUrl;
     }
     
-    // Get the current host for branding
-    const proxyHost = request.headers.get('host') || 'localhost:3000';
+    // Generate a unique cache-busting parameter for the iframe source
+    const timestamp = Date.now();
+    const cacheBusterUrl = targetUrl.includes('?') 
+      ? `${targetUrl}&_cb=${timestamp}` 
+      : `${targetUrl}?_cb=${timestamp}`;
     
     // Create a simple HTML page with an iframe that loads the target URL
     // The iframe takes up the full viewport and has no borders
@@ -58,6 +64,8 @@ export async function GET(
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>${matchingDemo.title || 'Demo'}</title>
+      <meta name="demo-id" content="${matchingDemo.id}">
+      <meta name="demo-slug" content="${slug}">
       <style>
         body, html { 
           margin: 0; 
@@ -76,7 +84,7 @@ export async function GET(
       </style>
     </head>
     <body>
-      <iframe src="${targetUrl}" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; camera; microphone; geolocation" allowfullscreen></iframe>
+      <iframe src="${cacheBusterUrl}" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; camera; microphone; geolocation" allowfullscreen></iframe>
     </body>
     </html>
     `;
@@ -85,6 +93,9 @@ export async function GET(
       status: 200,
       headers: {
         'Content-Type': 'text/html; charset=utf-8',
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+        'Pragma': 'no-cache',
+        'Expires': '0',
       }
     });
   } catch (error) {

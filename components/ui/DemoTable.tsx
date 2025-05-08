@@ -200,11 +200,19 @@ export default function DemoTable({ demos, verticals, clients, statuses }: DemoT
               paginatedDemos.map((demo) => (
                 <TableRow key={demo.id} hover>
                   <TableCell>
-                    <Link href={`/demos/${demo.id}`} passHref style={{ textDecoration: 'none' }}>
-                      <MuiLink color="primary" underline="hover">
-                        {demo.title || 'Untitled Demo'}
-                      </MuiLink>
-                    </Link>
+                    {demo.slug ? (
+                      <Link href={`/${demo.slug}`} passHref style={{ textDecoration: 'none' }}>
+                        <MuiLink color="primary" underline="hover">
+                          {demo.title || 'Untitled Demo'}
+                        </MuiLink>
+                      </Link>
+                    ) : (
+                      <Link href={`/demos/${demo.id}`} passHref style={{ textDecoration: 'none' }}>
+                        <MuiLink color="primary" underline="hover">
+                          {demo.title || 'Untitled Demo'}
+                        </MuiLink>
+                      </Link>
+                    )}
                   </TableCell>
                   <TableCell>{demo.client || '-'}</TableCell>
                   <TableCell>

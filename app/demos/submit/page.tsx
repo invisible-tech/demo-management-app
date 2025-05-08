@@ -16,6 +16,7 @@ const submitDemoSchema = z.object({
   vertical: z.string().optional(),
   url: z.string().url("Please enter a valid URL").optional(),
   authDetails: z.string().optional(),
+  slug: z.string().optional(),
 })
 
 type SubmitDemoFormData = z.infer<typeof submitDemoSchema>
@@ -67,6 +68,7 @@ export default function SubmitDemoPage() {
       <DemoForm 
         type="submit" 
         onSubmit={handleSubmit} 
+        isSubmitting={isSubmitting}
       />
     </Box>
   )

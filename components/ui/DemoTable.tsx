@@ -21,7 +21,8 @@ import {
   Select,
   Stack,
   IconButton,
-  Tooltip
+  Tooltip,
+  Typography
 } from '@mui/material';
 import { ExternalLink, Link2Off } from 'lucide-react';
 import Link from 'next/link';
@@ -207,11 +208,9 @@ export default function DemoTable({ demos, verticals, clients, statuses }: DemoT
                         </MuiLink>
                       </Link>
                     ) : (
-                      <Link href={`/demos/${demo.id}`} passHref style={{ textDecoration: 'none' }}>
-                        <MuiLink color="primary" underline="hover">
-                          {demo.title || 'Untitled Demo'}
-                        </MuiLink>
-                      </Link>
+                      <Typography color="textPrimary">
+                        {demo.title || 'Untitled Demo'}
+                      </Typography>
                     )}
                   </TableCell>
                   <TableCell>{demo.client || '-'}</TableCell>

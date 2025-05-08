@@ -10,7 +10,6 @@ const navItems = [
   { label: "Request Demo", href: "/demos/request" },
   { label: "Submit Demo", href: "/demos/submit" },
   { label: "How to Demo", href: "/how-to-demo" },
-  { label: "Admin", href: "/admin" },
 ]
 
 export default function Navbar() {

@@ -62,7 +62,7 @@ type NavigationItem = {
 
 const navigationItems: NavigationItem[] = [
   { label: 'All Demos', href: '/demos', icon: <Layout size={20} /> },
-  { label: 'Request Demo', href: '/demos/request', icon: <ClipboardList size={20} /> },
+  { label: 'Request a Demo', href: '/demos/request', icon: <ClipboardList size={20} /> },
   { label: 'Demo Status', href: '/demos/status', icon: <ListChecks size={20} /> },
   { label: 'Submit Demo', href: '/demos/submit', icon: <FileUp size={20} /> },
   { label: 'How to Demo', href: '/how-to-demo', icon: <BookOpen size={20} /> },

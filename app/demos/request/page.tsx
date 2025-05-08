@@ -11,9 +11,8 @@ import DemoForm from "@/components/ui/DemoForm"
 const requestDemoSchema = z.object({
   title: z.string().optional().default("Demo Request"),
   description: z.string().min(1, "Description is required"),
-  client: z.string().min(1, "Requested by is required"),
-  useCase: z.string().optional(),
-  vertical: z.string().optional(),
+  client: z.string().min(1, "Client is required"),
+  vertical: z.string().min(1, "Vertical is required"),
   dueDate: z.string().optional(),
 })
 

@@ -135,6 +135,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         authDetails: '',
         dueDate: formData.dueDate || undefined,
         client: formData.requestedBy || undefined,
+        vertical: formData.vertical,
       };
     } else if (isEdit) {
       submissionData = {
@@ -192,7 +193,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
             
             <TextField
               name="requestedBy"
-              label={isEdit ? 'Client' : 'Requested By'}
+              label={isEdit ? 'Client' : isRequest ? 'Client' : 'Requested By'}
               fullWidth
               required
               variant="outlined"
@@ -237,20 +238,15 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
           
           {isRequest ? (
             <>
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <InputLabel id="priority-label">Priority</InputLabel>
-                <Select
-                  labelId="priority-label"
-                  name="priority"
-                  label="Priority"
-                  value={formData.priority}
-                  onChange={handleSelectChange}
-                >
-                  <MenuItem value="low">Low</MenuItem>
-                  <MenuItem value="medium">Medium</MenuItem>
-                  <MenuItem value="high">High</MenuItem>
-                </Select>
-              </FormControl>
+              <TextField
+                name="vertical"
+                label="Vertical"
+                fullWidth
+                variant="outlined"
+                value={formData.vertical}
+                onChange={handleTextChange}
+                sx={{ mb: 3 }}
+              />
               
               <TextField
                 name="dueDate"
@@ -260,15 +256,6 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
                 InputLabelProps={{ shrink: true }}
                 sx={{ mb: 3 }}
                 value={formData.dueDate}
-                onChange={handleTextChange}
-              />
-              
-              <TextField
-                name="stakeholders"
-                label="Stakeholders"
-                fullWidth
-                placeholder="Enter stakeholder names or emails"
-                value={formData.stakeholders}
                 onChange={handleTextChange}
               />
             </>

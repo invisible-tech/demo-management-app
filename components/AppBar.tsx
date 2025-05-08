@@ -35,9 +35,7 @@ export default function AppBar() {
           
           <Box sx={{ flexGrow: 1 }} />
           
-          <Typography variant="body2" color="text.secondary">
-            Demo Management
-          </Typography>
+
         </Stack>
       </Toolbar>
     </AppBarMUI>

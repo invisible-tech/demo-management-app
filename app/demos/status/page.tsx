@@ -1,9 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Box, Typography, Paper } from '@mui/material'
-import { Demo } from "@/lib/schema"
 import { 
+  Box, 
+  Typography, 
+  Paper,
   Table, 
   TableBody, 
   TableCell, 
@@ -13,6 +14,7 @@ import {
   Button,
   Link as MuiLink
 } from '@mui/material'
+import { Demo } from "@/lib/schema"
 import Link from 'next/link'
 
 export default function DemoStatusPage() {
@@ -27,7 +29,7 @@ export default function DemoStatusPage() {
           throw new Error('Failed to fetch demos')
         }
         const data = await response.json()
-        setDemos(data.demos || [])
+        setDemos(data || [])
       } catch (error) {
         console.error('Error fetching demos:', error)
       } finally {
@@ -76,11 +78,9 @@ export default function DemoStatusPage() {
                 {demos.map((demo) => (
                   <TableRow key={demo.id} hover>
                     <TableCell>
-                      <Link href={`/demos/${demo.id}`} passHref style={{ textDecoration: 'none' }}>
-                        <MuiLink color="primary" underline="hover">
-                          {demo.title || 'Untitled Demo'}
-                        </MuiLink>
-                      </Link>
+                      <Typography color="textPrimary">
+                        {demo.title || 'Untitled Demo'}
+                      </Typography>
                     </TableCell>
                     <TableCell>{demo.client || '-'}</TableCell>
                     <TableCell>

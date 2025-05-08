@@ -10,8 +10,8 @@ import { Box, CssBaseline } from "@mui/material";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Demo Management App",
-  description: "Manage company demos efficiently",
+  title: "Demos | Invisible",
+  description: "Access, request, & manage Invisible Demos",
 };
 
 export default function RootLayout({

@@ -33,9 +33,21 @@ export async function middleware(request: NextRequest) {
   }
   
   const slug = pathParts[0];
-  console.log(`[Middleware] Processing potential slug: "${slug}"`);
+  
+  // Special handling for _direct paths - don't log every asset request
+  const isAssetRequest = request.nextUrl.pathname.includes('/api/asset') || 
+                        request.nextUrl.searchParams.has('path');
+  
+  if (!isAssetRequest) {
+    console.log(`[Middleware] Processing potential slug: "${slug}"`);
+  }
   
   try {
+    // Skip asset proxy API requests entirely
+    if (isAssetRequest) {
+      return NextResponse.next();
+    }
+    
     // Check if this slug exists in our database
     const demoIds = await redis.smembers(KEYS.DEMOS);
     
@@ -75,7 +87,7 @@ export async function middleware(request: NextRequest) {
 // Only run middleware on specific paths (exclude static files, etc.)
 export const config = {
   matcher: [
-    // Match all paths except Next.js internals
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    // Match all paths except Next.js internals and our asset API
+    '/((?!_next/static|_next/image|api/asset|favicon.ico).*)',
   ],
 }; 

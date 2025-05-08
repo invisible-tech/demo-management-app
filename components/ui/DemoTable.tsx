@@ -223,14 +223,16 @@ export default function DemoTable({ demos, verticals, clients, statuses }: DemoT
                   </TableCell>
                   <TableCell>
                     <Stack direction="row" spacing={1}>
-                      <Button 
-                        variant="outlined" 
-                        size="small"
-                        component={Link}
-                        href={`/demos/${demo.id}`}
-                      >
-                        View
-                      </Button>
+                      {demo.slug ? (
+                        <Button 
+                          variant="outlined" 
+                          size="small"
+                          component={Link}
+                          href={`/${demo.slug}`}
+                        >
+                          View
+                        </Button>
+                      ) : null}
                       
                       <Button 
                         variant="outlined" 
@@ -241,29 +243,6 @@ export default function DemoTable({ demos, verticals, clients, statuses }: DemoT
                       >
                         Edit
                       </Button>
-                      
-                      {demo.url ? (
-                        <Tooltip title="Open Demo URL">
-                          <IconButton
-                            size="small"
-                            color="primary"
-                            component="a"
-                            href={demo.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <ExternalLink size={18} />
-                          </IconButton>
-                        </Tooltip>
-                      ) : (
-                        <Tooltip title="No URL available">
-                          <span>
-                            <IconButton size="small" disabled>
-                              <Link2Off size={18} />
-                            </IconButton>
-                          </span>
-                        </Tooltip>
-                      )}
                     </Stack>
                   </TableCell>
                 </TableRow>

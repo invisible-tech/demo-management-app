@@ -61,7 +61,7 @@ export default function EditDemoPage({ params }) {
       
       const updatedDemo = await response.json();
       toast.success("Demo updated successfully");
-      router.push(`/demos/${id}`);
+      router.push('/demos?status=ready');
     } catch (error) {
       console.error("Error updating demo:", error);
       toast.error(error.message || "Failed to update demo. Please try again.");

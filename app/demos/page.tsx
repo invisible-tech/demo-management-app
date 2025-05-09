@@ -1,8 +1,9 @@
 import { Suspense } from "react"
 import { getAllDemos } from "@/lib/db"
 import { Demo } from "@/lib/schema"
-import { Box, Typography, Container, Paper } from '@mui/material';
+import { Box, Typography, Container, Paper, Button } from '@mui/material';
 import DemoTable from "@/components/ui/DemoTable"
+import Link from "next/link"
 
 export const dynamic = "force-dynamic"
 
@@ -12,20 +13,37 @@ export default async function DemosPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const params = await searchParams
-  const status = typeof params.status === "string" ? params.status : undefined
+  // Default status to "ready" if not specified
+  const status = typeof params.status === "string" ? params.status : "ready"
   const vertical = typeof params.vertical === "string" ? params.vertical : undefined
   const assignedTo = typeof params.assignedTo === "string" ? params.assignedTo : undefined
   const search = typeof params.search === "string" ? params.search : undefined
 
   return (
     <Box sx={{ my: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
-          All Demos
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Browse, search, and filter all available demos
-        </Typography>
+      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
+            All Demos
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Browse, search, and filter all available demos
+          </Typography>
+        </div>
+        <Link href="/demos/register" passHref style={{ textDecoration: 'none' }}>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            size="large"
+            sx={{ 
+              fontWeight: 'medium',
+              boxShadow: 2,
+              px: 3
+            }}
+          >
+            Register New Demo
+          </Button>
+        </Link>
       </Box>
 
       <Suspense fallback={<Box sx={{ textAlign: 'center', py: 4 }}>Loading demos...</Box>}>

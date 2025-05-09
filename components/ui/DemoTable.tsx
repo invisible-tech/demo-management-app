@@ -60,9 +60,9 @@ interface DemoTableProps {
 
 export default function DemoTable({ demos, verticals, clients, statuses }: DemoTableProps) {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(50);
   const [filters, setFilters] = useState({
-    status: '',
+    status: 'ready',
     vertical: '',
     client: '',
     search: '',
@@ -267,7 +267,7 @@ export default function DemoTable({ demos, verticals, clients, statuses }: DemoT
       
       {/* Pagination */}
       <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
+        rowsPerPageOptions={[10, 25, 50, 100]}
         component="div"
         count={filteredDemos.length}
         rowsPerPage={rowsPerPage}

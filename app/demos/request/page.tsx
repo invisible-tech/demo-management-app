@@ -11,8 +11,7 @@ import DemoForm from "@/components/ui/DemoForm"
 const requestDemoSchema = z.object({
   title: z.string().optional().default("Demo Request"),
   description: z.string().min(1, "Description is required"),
-  client: z.string().min(1, "Client is required"),
-  vertical: z.string().min(1, "Vertical is required"),
+  requestedBy: z.string().min(1, "Requested By is required"),
   dueDate: z.string().optional(),
 })
 
@@ -39,6 +38,7 @@ export default function RequestDemoPage() {
           assignedTo: "n/a",
           url: "",
           authDetails: "",
+          client: data.requestedBy
         }),
       })
       
@@ -70,7 +70,7 @@ export default function RequestDemoPage() {
           Request a Demo
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Fill out the form below to request a new demo for your client needs
+          Fill out the form below to request a demo. Contact Nick Agresti for questions.
         </Typography>
       </Box>
       

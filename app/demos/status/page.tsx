@@ -29,7 +29,17 @@ export default function DemoStatusPage() {
           throw new Error('Failed to fetch demos')
         }
         const data = await response.json()
-        setDemos(data || [])
+        
+        // Sort demos by due date (soonest first)
+        const sortedDemos = [...data].sort((a, b) => {
+          // Handle cases where dueDate might be missing
+          if (!a.dueDate) return 1;  // Put items without due date at the end
+          if (!b.dueDate) return -1;
+          
+          return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+        });
+        
+        setDemos(sortedDemos || [])
       } catch (error) {
         console.error('Error fetching demos:', error)
       } finally {
@@ -44,10 +54,10 @@ export default function DemoStatusPage() {
     <Box sx={{ my: 4 }}>
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
-          Demo Status
+          Requested Demo Status
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          View all requested demos
+          View status of requested demos
         </Typography>
       </Box>
       
@@ -67,10 +77,10 @@ export default function DemoStatusPage() {
               <TableHead>
                 <TableRow>
                   <TableCell sx={{ fontWeight: 'bold' }}>Title</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Client</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Description</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Due Date</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Assigned To</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Requested By</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -82,7 +92,6 @@ export default function DemoStatusPage() {
                         {demo.title || 'Untitled Demo'}
                       </Typography>
                     </TableCell>
-                    <TableCell>{demo.client || '-'}</TableCell>
                     <TableCell>
                       {demo.description 
                         ? demo.description.length > 100 
@@ -96,6 +105,7 @@ export default function DemoStatusPage() {
                         : '-'}
                     </TableCell>
                     <TableCell>{demo.assignedTo || '-'}</TableCell>
+                    <TableCell>{demo.client || '-'}</TableCell>
                     <TableCell>
                       <Button 
                         variant="outlined" 

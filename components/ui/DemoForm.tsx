@@ -63,7 +63,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
   const isRegister = type === 'register';
   const isEdit = type === 'edit';
   const isSubmit = type === 'submit';
-  const formTitle = isRequest ? 'Request a Demo' : isEdit ? 'Edit Demo' : isRegister ? 'Register a Demo' : 'Submit a Demo';
+  const formTitle = isRequest ? 'Request a Demo' : isEdit ? 'Edit Demo' : 'Register a Demo';
   
   // URL preview for slug
   const [slugPreview, setSlugPreview] = useState('');
@@ -149,7 +149,6 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         authDetails: '',
         dueDate: formData.dueDate || undefined,
         client: formData.requestedBy || undefined,
-        vertical: formData.vertical,
       };
     } else if (isEdit) {
       submissionData = {
@@ -213,10 +212,10 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
               required={!isRequest}
             />
             
-            {!isRegister && (
+            {(!isRegister || isRequest) && (
               <TextField
                 name="requestedBy"
-                label={isEdit ? 'Client' : isRequest ? 'Client' : 'Requested By'}
+                label={isEdit ? 'Client' : 'Requested By'}
                 fullWidth
                 required
                 variant="outlined"
@@ -260,16 +259,6 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         <FormSection>
           {isRequest ? (
             <>
-              <TextField
-                name="vertical"
-                label="Vertical"
-                fullWidth
-                variant="outlined"
-                value={formData.vertical}
-                onChange={handleTextChange}
-                sx={{ mb: 3 }}
-              />
-              
               <TextField
                 name="dueDate"
                 label="Target Completion Date"
@@ -357,7 +346,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
             type="submit"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Saving...' : (isRequest ? 'Submit Request' : isEdit ? 'Save Changes' : isRegister ? 'Register Demo' : 'Submit Demo')}
+            {isSubmitting ? 'Saving...' : (isRequest ? 'Submit Request' : isEdit ? 'Save Changes' : 'Register Demo')}
           </Button>
         </FormActions>
       </Box>

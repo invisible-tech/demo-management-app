@@ -19,7 +19,8 @@ import {
   FileUp, 
   ClipboardList, 
   BookOpen,
-  Settings
+  Settings,
+  Layers
 } from 'lucide-react';
 
 const drawerWidth = 240;
@@ -61,10 +62,11 @@ type NavigationItem = {
 };
 
 const navigationItems: NavigationItem[] = [
+  { label: 'Core Platform', href: '/core', icon: <Layers size={20} /> },
   { label: 'All Demos', href: '/demos', icon: <Layout size={20} /> },
   { label: 'Request a Demo', href: '/demos/request', icon: <ClipboardList size={20} /> },
   { label: 'Demo Status', href: '/demos/status', icon: <ListChecks size={20} /> },
-  { label: 'Register Demo', href: '/demos/submit', icon: <FileUp size={20} /> },
+  { label: 'Register Demo', href: '/demos/register', icon: <FileUp size={20} /> },
   { label: 'How to Demo', href: '/how-to-demo', icon: <BookOpen size={20} /> },
 ];
 

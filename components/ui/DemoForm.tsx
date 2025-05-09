@@ -52,7 +52,7 @@ const FormActions = styled(Box)(({ theme }) => ({
 }));
 
 interface DemoFormProps {
-  type: 'request' | 'submit' | 'edit';
+  type: 'request' | 'submit' | 'register' | 'edit';
   onSubmit: (data: any) => void;
   isSubmitting?: boolean;
   demo?: Demo;
@@ -60,8 +60,13 @@ interface DemoFormProps {
 
 export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }: DemoFormProps) {
   const isRequest = type === 'request';
+  const isRegister = type === 'register';
   const isEdit = type === 'edit';
-  const formTitle = isRequest ? 'Request a Demo' : isEdit ? 'Edit Demo' : 'Submit a Demo';
+  const isSubmit = type === 'submit';
+  const formTitle = isRequest ? 'Request a Demo' : isEdit ? 'Edit Demo' : isRegister ? 'Register a Demo' : 'Submit a Demo';
+  
+  // URL preview for slug
+  const [slugPreview, setSlugPreview] = useState('');
   
   // Form state
   const [formData, setFormData] = useState({
@@ -79,6 +84,15 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
     vertical: '',
     useCase: ''
   });
+
+  // Update slug preview when slug changes
+  useEffect(() => {
+    if (formData.slug) {
+      setSlugPreview(`https://demos.inv.tech/${formData.slug}`);
+    } else {
+      setSlugPreview('');
+    }
+  }, [formData.slug]);
   
   // If editing, populate form with demo data
   useEffect(() => {
@@ -151,6 +165,19 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         vertical: formData.vertical,
         useCase: formData.useCase
       };
+    } else if (isRegister) {
+      submissionData = {
+        title: formData.title,
+        description: formData.description,
+        status: formData.status,
+        assignedTo: formData.assignedTo,
+        url: formData.url,
+        authDetails: formData.authDetails,
+        slug: formData.slug,
+        vertical: formData.vertical,
+        useCase: formData.useCase,
+        client: formData.requestedBy
+      };
     } else {
       // Submit logic
       submissionData = {
@@ -172,13 +199,8 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
   
   return (
     <FormPaper elevation={3}>
-      <FormTitle variant="h4">{formTitle}</FormTitle>
-      
       <Box component="form" onSubmit={handleSubmit}>
         <FormSection>
-          <Typography variant="h6" gutterBottom>
-            {isRequest ? 'Demo Information' : 'Basic Information'}
-          </Typography>
           
           <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' } }}>
             <TextField
@@ -191,27 +213,33 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
               required={!isRequest}
             />
             
-            <TextField
-              name="requestedBy"
-              label={isEdit ? 'Client' : isRequest ? 'Client' : 'Requested By'}
-              fullWidth
-              required
-              variant="outlined"
-              value={formData.requestedBy}
-              onChange={handleTextChange}
-            />
+            {!isRegister && (
+              <TextField
+                name="requestedBy"
+                label={isEdit ? 'Client' : isRequest ? 'Client' : 'Requested By'}
+                fullWidth
+                required
+                variant="outlined"
+                value={formData.requestedBy}
+                onChange={handleTextChange}
+              />
+            )}
           </Box>
 
-          {(isEdit || type === 'submit') && (
+          {(isEdit || isRegister || isSubmit) && (
             <TextField
               name="slug"
-              label="Slug (optional)"
-              fullWidth
+              label={isRegister ? "Slug (required)" : "Slug (optional)"}
+              fullWidth={!isRegister}
+              sx={{ 
+                mt: 3,
+                ...(isRegister ? { width: '50%' } : {})
+              }}
+              required={isRegister}
               variant="outlined"
               value={formData.slug}
               onChange={handleTextChange}
-              sx={{ mt: 3 }}
-              helperText="A URL-friendly identifier - this demo will be accessible at /demos/[slug]"
+              helperText={slugPreview ? `URL: ${slugPreview}` : "This will create your URL for the demo, eg https://demos.inv.tech/MY_DEMO"}
             />
           )}
           
@@ -219,7 +247,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
             name="description"
             label="Description"
             fullWidth
-            required
+            required={!isRegister}
             multiline
             rows={4}
             sx={{ mt: 3 }}
@@ -229,11 +257,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
           />
         </FormSection>
         
-        <FormDivider />
-        
         <FormSection>
-
-          
           {isRequest ? (
             <>
               <TextField
@@ -262,34 +286,38 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
               <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, mb: 3 }}>
                 <TextField
                   name="assignedTo"
-                  label="Assigned To"
+                  label={isRegister ? "Demo Creator" : "Assigned To"}
                   fullWidth
                   variant="outlined"
                   value={formData.assignedTo}
                   onChange={handleTextChange}
                 />
                 
-                <TextField
-                  name="vertical"
-                  label="Vertical"
-                  fullWidth
-                  variant="outlined"
-                  value={formData.vertical}
-                  onChange={handleTextChange}
-                />
+                {!isRegister && (
+                  <TextField
+                    name="vertical"
+                    label="Vertical"
+                    fullWidth
+                    variant="outlined"
+                    value={formData.vertical}
+                    onChange={handleTextChange}
+                  />
+                )}
               </Box>
               
-              <TextField
-                name="useCase"
-                label="Use Case"
-                fullWidth
-                variant="outlined"
-                multiline
-                rows={2}
-                sx={{ mb: 3 }}
-                value={formData.useCase}
-                onChange={handleTextChange}
-              />
+              {!isRegister && (
+                <TextField
+                  name="useCase"
+                  label="Use Case"
+                  fullWidth
+                  variant="outlined"
+                  multiline
+                  rows={2}
+                  sx={{ mb: 3 }}
+                  value={formData.useCase}
+                  onChange={handleTextChange}
+                />
+              )}
               
               <TextField
                 name="url"
@@ -302,11 +330,11 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
               
               <TextField
                 name="authDetails"
-                label="Auth Details"
+                label={isRegister ? "Password" : "Auth Details"}
                 fullWidth
-                multiline
-                rows={3}
-                placeholder="Provide access credentials if needed"
+                multiline={!isRegister}
+                rows={isRegister ? 1 : 3}
+                placeholder={isRegister ? "Provide password if needed" : "Provide access credentials if needed"}
                 value={formData.authDetails}
                 onChange={handleTextChange}
               />
@@ -329,7 +357,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
             type="submit"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Saving...' : (isRequest ? 'Submit Request' : isEdit ? 'Save Changes' : 'Submit Demo')}
+            {isSubmitting ? 'Saving...' : (isRequest ? 'Submit Request' : isEdit ? 'Save Changes' : isRegister ? 'Register Demo' : 'Submit Demo')}
           </Button>
         </FormActions>
       </Box>

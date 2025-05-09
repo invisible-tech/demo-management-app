@@ -8,20 +8,18 @@ import { Typography, Box } from '@mui/material';
 import DemoForm from "@/components/ui/DemoForm"
 
 // Form schema
-const submitDemoSchema = z.object({
+const registerDemoSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
-  client: z.string().optional(),
-  useCase: z.string().optional(),
-  vertical: z.string().optional(),
   url: z.string().url("Please enter a valid URL").optional(),
+  slug: z.string().min(1, "Slug is required"),
   authDetails: z.string().optional(),
-  slug: z.string().optional(),
+  assignedTo: z.string().optional(),
 })
 
-type SubmitDemoFormData = z.infer<typeof submitDemoSchema>
+type RegisterDemoFormData = z.infer<typeof registerDemoSchema>
 
-export default function SubmitDemoPage() {
+export default function RegisterDemoPage() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -41,14 +39,14 @@ export default function SubmitDemoPage() {
       })
       
       if (!response.ok) {
-        throw new Error("Failed to submit demo")
+        throw new Error("Failed to register demo")
       }
       
-      toast.success("Demo submitted successfully")
+      toast.success("Demo registered successfully")
       router.push("/demos?status=ready")
     } catch (error) {
-      console.error("Error submitting demo:", error)
-      toast.error("Failed to submit demo. Please try again.")
+      console.error("Error registering demo:", error)
+      toast.error("Failed to register demo. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
@@ -58,15 +56,15 @@ export default function SubmitDemoPage() {
     <Box sx={{ my: 4, maxWidth: 800, mx: 'auto' }}>
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
-          Submit a Demo
+          Register a Demo
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Complete this form to submit a new demo
+          Complete this form to register a new demo
         </Typography>
       </Box>
       
       <DemoForm 
-        type="submit" 
+        type="register" 
         onSubmit={handleSubmit} 
         isSubmitting={isSubmitting}
       />

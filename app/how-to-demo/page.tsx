@@ -1,10 +1,10 @@
 "use client";
 
 import { Box, Typography, Tabs, Tab, Paper } from '@mui/material';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function HowToDemoPage() {
+function HowToDemoContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab') || 'sales';
@@ -86,5 +86,22 @@ export default function HowToDemoPage() {
         />
       </Box>
     </Box>
+  );
+}
+
+// Add loading fallback
+function LoadingFallback() {
+  return (
+    <Box sx={{ my: 4, textAlign: 'center' }}>
+      <Typography variant="h6">Loading...</Typography>
+    </Box>
+  );
+}
+
+export default function HowToDemoPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <HowToDemoContent />
+    </Suspense>
   );
 } 

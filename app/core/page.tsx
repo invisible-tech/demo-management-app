@@ -21,7 +21,7 @@ const coreComponents = [
     demos: [
       { 
         title: 'Data Platform Visualization', 
-        url: 'https://prototype-data-platform-git-grubhubnew-invisible-prototypes.vercel.app/visualize'
+        url: 'https://demos.inv.tech/data-platform'
       }
     ]
   },
@@ -32,11 +32,11 @@ const coreComponents = [
     demos: [
       { 
         title: 'RLHF Annotation', 
-        url: 'https://inv-annotation.vercel.app/tasks'
+        url: 'https://demos.inv.tech/rlhf-annotation'
       },
       { 
         title: 'Evaluation Report', 
-        url: 'https://prototype-foundation-model-eval.invsta.systems/report/multilingual'
+        url: 'https://demos.inv.tech/multilingual-evaluation'
       }
     ]
   },
@@ -47,7 +47,7 @@ const coreComponents = [
     demos: [
       { 
         title: 'Ad Ops Workflow', 
-        url: 'https://ad-ops-workflow-johncutter3.replit.app/app?from=splash'
+        url: 'https://demos.inv.tech/agentic'
       }
     ]
   },
@@ -58,7 +58,7 @@ const coreComponents = [
     demos: [
       { 
         title: 'Invisible Trainers', 
-        url: 'https://lab.inv.tech/invisible-trainers'
+        url: 'https://demos.inv.tech/trainers'
       }
     ]
   },
@@ -69,7 +69,7 @@ const coreComponents = [
     demos: [
       { 
         title: 'Process Builder Dashboard', 
-        url: 'https://builder-next-gen-bh.replit.app/dashboard'
+        url: 'https://demos.inv.tech/builder'
       }
     ]
   }

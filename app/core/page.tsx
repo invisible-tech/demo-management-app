@@ -32,11 +32,15 @@ const coreComponents = [
     demos: [
       { 
         title: 'RLHF Annotation', 
-        url: 'https://demos.inv.tech/rlhf-annotation'
+        url: 'https://demos.inv.tech/rlhf-annotation-msft'
       },
       { 
         title: 'Evaluation Report', 
         url: 'https://demos.inv.tech/multilingual-evaluation'
+      },
+      { 
+        title: 'Evals for enterprise', 
+        url: 'https://demos.inv.tech/evals-enterprise'
       }
     ]
   },

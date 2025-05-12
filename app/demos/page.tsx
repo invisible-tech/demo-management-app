@@ -13,8 +13,8 @@ export default async function DemosPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const params = await searchParams
-  // Default status to "ready" if not specified
-  const status = typeof params.status === "string" ? params.status : "ready"
+  // Default status to empty string to show all demos
+  const status = typeof params.status === "string" ? params.status : ""
   const vertical = typeof params.vertical === "string" ? params.vertical : undefined
   const assignedTo = typeof params.assignedTo === "string" ? params.assignedTo : undefined
   const search = typeof params.search === "string" ? params.search : undefined

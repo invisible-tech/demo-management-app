@@ -62,7 +62,7 @@ export default function DemoTable({ demos, verticals, clients, statuses }: DemoT
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [filters, setFilters] = useState({
-    status: 'ready',
+    status: '',
     vertical: '',
     client: '',
     search: '',

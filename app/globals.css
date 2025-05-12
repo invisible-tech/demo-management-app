@@ -15,7 +15,7 @@ body {
 */
 
 /* CSS Variables for theme consistency */
-:root {
+  :root {
   --primary-color: #0070f3;
   --secondary-color: #000000;
   --background-color: #ffffff;
@@ -26,8 +26,8 @@ body {
 .MuiDrawer-paper {
   background-color: var(--background-color);
   border-right: 1px solid var(--border-color);
-}
-
+  }
+ 
 /* Override default Material UI styling for our theme */
 .MuiAppBar-root {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;

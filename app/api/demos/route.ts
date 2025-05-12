@@ -101,10 +101,10 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      // Create demo
-      const demo = await createDemo(result.data)
+    // Create demo
+    const demo = await createDemo(result.data)
       console.log("Demo created successfully:", demo.id);
-      return NextResponse.json(demo, { status: 201 })
+    return NextResponse.json(demo, { status: 201 })
     } catch (dbError: any) {
       console.error("Database error creating demo:", dbError);
       return NextResponse.json(

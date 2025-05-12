@@ -92,16 +92,16 @@ export async function GET(
     </body>
     </html>
     `;
-    
+      
     return new NextResponse(html, {
       status: 200,
-      headers: {
+        headers: {
         'Content-Type': 'text/html; charset=utf-8',
         'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
         'Pragma': 'no-cache',
         'Expires': '0',
-      }
-    });
+        }
+      });
   } catch (error) {
     console.error('[SlugRoute] Error:', error);
     return NextResponse.json(

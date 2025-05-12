@@ -20,8 +20,8 @@ export default async function DemosPage({
   const search = typeof params.search === "string" ? params.search : undefined
 
   return (
-    <Box sx={{ my: 4 }}>
-      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Box sx={{ my: 2 }}>
+      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
             All Demos

@@ -101,9 +101,9 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         title: demo.title || '',
         requestedBy: demo.client || '',
         description: demo.description || '',
-        priority: 'medium', // Not stored in the demo object
+        priority: 'medium',
         dueDate: demo.dueDate || '',
-        stakeholders: '', // Not stored in the demo object
+        stakeholders: '',
         status: demo.status || 'requested',
         url: demo.url || '',
         authDetails: demo.authDetails || '',
@@ -304,6 +304,38 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
                   rows={2}
                   sx={{ mb: 3 }}
                   value={formData.useCase}
+                  onChange={handleTextChange}
+                />
+              )}
+              
+              {isEdit && (
+                <FormControl fullWidth sx={{ mb: 3 }}>
+                  <InputLabel id="status-label">Status</InputLabel>
+                  <Select
+                    labelId="status-label"
+                    name="status"
+                    value={formData.status}
+                    label="Status"
+                    onChange={handleSelectChange}
+                  >
+                    <MenuItem value="requested">Requested</MenuItem>
+                    <MenuItem value="in_progress">In Progress</MenuItem>
+                    <MenuItem value="ready">Ready</MenuItem>
+                    <MenuItem value="delivered">Delivered</MenuItem>
+                    <MenuItem value="archived">Archived</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+
+              {isEdit && (
+                <TextField
+                  name="dueDate"
+                  label="Due Date"
+                  type="date"
+                  fullWidth
+                  InputLabelProps={{ shrink: true }}
+                  sx={{ mb: 3 }}
+                  value={formData.dueDate}
                   onChange={handleTextChange}
                 />
               )}

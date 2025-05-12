@@ -123,7 +123,7 @@ export default function DemoTable({ demos, verticals, clients, statuses }: DemoT
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       {/* Filters */}
-      <Box sx={{ p: 2, display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+      <Box sx={{ p: 1, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
         <TextField
           label="Search"
           variant="outlined"

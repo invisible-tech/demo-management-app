@@ -25,10 +25,10 @@ export default function AppBar() {
         >
           <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
             <NextImage
-              src='/inv-workplace.svg'
-              alt='Invisible Workplace'
-              width={180}
-              height={36}
+              src='/logo.png'
+              alt='Invisible Demos'
+              width={136}
+              height={57}
               priority
             />
           </Link>

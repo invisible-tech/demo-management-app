@@ -31,11 +31,11 @@ export default function RootLayout({
               component="main"
               sx={{ 
                 flexGrow: 1,
-                p: 3,
+                p: { xs: 2, sm: 2 },
                 mt: '64px', // AppBar height
-                ml: '240px', // Drawer width
-                width: { xs: 'calc(100% - 240px)' },
-                maxWidth: { sm: 'calc(100% - 240px)' }, 
+                ml: '100px', // Drawer width
+                width: { xs: 'calc(100% - 100px)' },
+                maxWidth: { sm: 'calc(100% - 100px)' }, 
                 overflow: 'auto'
               }}
             >

@@ -33,7 +33,7 @@ function HowToDemoContent() {
           Guidelines for requesting, creating, and presenting demos
         </Typography>
       </Box>
-      
+              
       <Paper sx={{ mb: 3 }}>
         <Tabs 
           value={activeTab} 
@@ -65,7 +65,7 @@ function HowToDemoContent() {
           allowFullScreen
         />
       </Box>
-      
+              
       <Box sx={{ 
         width: '100%', 
         height: 'calc(100vh - 250px)', 

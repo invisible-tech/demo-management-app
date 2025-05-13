@@ -12,7 +12,8 @@ import {
   TableHead, 
   TableRow,
   Button,
-  Link as MuiLink
+  Link as MuiLink,
+  Chip
 } from '@mui/material'
 import { Demo } from "@/lib/schema"
 import Link from 'next/link'
@@ -24,14 +25,22 @@ export default function DemoStatusPage() {
   useEffect(() => {
     const fetchDemos = async () => {
       try {
-        const response = await fetch('/api/demos?status=requested')
-        if (!response.ok) {
+        // Fetch both "requested" and "in_progress" demos
+        const requestedResponse = await fetch('/api/demos?status=requested')
+        const inProgressResponse = await fetch('/api/demos?status=in_progress')
+        
+        if (!requestedResponse.ok || !inProgressResponse.ok) {
           throw new Error('Failed to fetch demos')
         }
-        const data = await response.json()
+        
+        const requestedData = await requestedResponse.json()
+        const inProgressData = await inProgressResponse.json()
+        
+        // Combine both sets of demos
+        const allDemos = [...requestedData, ...inProgressData]
         
         // Sort demos by due date (soonest first)
-        const sortedDemos = [...data].sort((a, b) => {
+        const sortedDemos = [...allDemos].sort((a, b) => {
           // Handle cases where dueDate might be missing
           if (!a.dueDate) return 1;  // Put items without due date at the end
           if (!b.dueDate) return -1;
@@ -50,14 +59,37 @@ export default function DemoStatusPage() {
     fetchDemos()
   }, [])
 
+  // Function to get status chip color
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'requested':
+        return 'info';
+      case 'in_progress':
+        return 'warning';
+      case 'ready':
+        return 'success';
+      case 'delivered':
+        return 'secondary';
+      case 'archived':
+        return 'default';
+      default:
+        return 'default';
+    }
+  }
+
+  // Format status text for display
+  const formatStatus = (status: string) => {
+    return status.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+  }
+
   return (
     <Box sx={{ my: 4 }}>
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
-          Requested Demo Status
+          Demo Status
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          View status of requested demos
+          View status of requested and in-progress demos
         </Typography>
       </Box>
       
@@ -66,7 +98,7 @@ export default function DemoStatusPage() {
           <Box sx={{ textAlign: 'center', py: 4 }}>Loading demos...</Box>
         ) : demos.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 4 }}>
-            <Typography variant="h6" gutterBottom>No requested demos found</Typography>
+            <Typography variant="h6" gutterBottom>No demos found</Typography>
             <Typography color="text.secondary" paragraph>
               All demo requests have been processed.
             </Typography>
@@ -78,6 +110,7 @@ export default function DemoStatusPage() {
                 <TableRow>
                   <TableCell sx={{ fontWeight: 'bold' }}>Title</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Description</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Due Date</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Assigned To</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Requested By</TableCell>
@@ -98,6 +131,13 @@ export default function DemoStatusPage() {
                           ? `${demo.description.substring(0, 100)}...` 
                           : demo.description
                         : '-'}
+                    </TableCell>
+                    <TableCell>
+                      <Chip 
+                        label={formatStatus(demo.status)} 
+                        color={getStatusColor(demo.status) as any}
+                        size="small"
+                      />
                     </TableCell>
                     <TableCell>
                       {demo.dueDate 

@@ -24,7 +24,7 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import { ExternalLink, Link2Off } from 'lucide-react';
+import { ExternalLink, Link2Off, FileText, Video } from 'lucide-react';
 import Link from 'next/link';
 import { Demo } from '@/lib/schema';
 
@@ -119,6 +119,17 @@ export default function DemoTable({ demos, verticals, clients, statuses }: DemoT
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
+
+  // Utility function to validate URL
+  const isValidUrl = (url: string | undefined): boolean => {
+    if (!url) return false;
+    try {
+      new URL(url);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -240,6 +251,40 @@ export default function DemoTable({ demos, verticals, clients, statuses }: DemoT
                           View
                         </Button>
                       ) : null}
+                      
+                      {isValidUrl(demo.scriptUrl) && (
+                        <Tooltip title="View Script">
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            color="info"
+                            component="a"
+                            href={demo.scriptUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            startIcon={<FileText size={16} />}
+                          >
+                            Script
+                          </Button>
+                        </Tooltip>
+                      )}
+                      
+                      {isValidUrl(demo.recordingUrl) && (
+                        <Tooltip title="View Recording">
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            color="error"
+                            component="a"
+                            href={demo.recordingUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            startIcon={<Video size={16} />}
+                          >
+                            Recording
+                          </Button>
+                        </Tooltip>
+                      )}
                       
                       <Button 
                         variant="outlined" 

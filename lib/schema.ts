@@ -19,6 +19,8 @@ export const demoSchema = z.object({
   assignedTo: z.string().optional(),
   useCase: z.string().optional(),
   url: z.union([z.string().url(), z.literal("")]).optional(),
+  scriptUrl: z.union([z.string().url(), z.literal("")]).optional(),
+  recordingUrl: z.union([z.string().url(), z.literal("")]).optional(),
   authDetails: z.string().optional(),
   dueDate: z.string().optional(), // ISO date string
   createdAt: z.string(), // ISO date string

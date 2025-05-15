@@ -78,6 +78,8 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
     stakeholders: '',
     status: isRequest ? 'requested' : 'ready',
     url: '',
+    scriptUrl: '',
+    recordingUrl: '',
     authDetails: '',
     assignedTo: isRequest ? 'n/a' : '',
     slug: '',
@@ -106,6 +108,8 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         stakeholders: '',
         status: demo.status || 'requested',
         url: demo.url || '',
+        scriptUrl: demo.scriptUrl || '',
+        recordingUrl: demo.recordingUrl || '',
         authDetails: demo.authDetails || '',
         assignedTo: demo.assignedTo || '',
         slug: demo.slug || '',
@@ -146,6 +150,8 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         status: 'requested',
         assignedTo: 'n/a',
         url: '',
+        scriptUrl: '',
+        recordingUrl: '',
         authDetails: '',
         dueDate: formData.dueDate || undefined,
         client: formData.requestedBy || undefined,
@@ -157,6 +163,8 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         status: formData.status,
         assignedTo: formData.assignedTo,
         url: formData.url,
+        scriptUrl: formData.scriptUrl,
+        recordingUrl: formData.recordingUrl,
         authDetails: formData.authDetails,
         dueDate: formData.dueDate || undefined,
         client: formData.requestedBy,
@@ -171,6 +179,8 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         status: formData.status,
         assignedTo: formData.assignedTo,
         url: formData.url,
+        scriptUrl: formData.scriptUrl,
+        recordingUrl: formData.recordingUrl,
         authDetails: formData.authDetails,
         slug: formData.slug,
         vertical: formData.vertical,
@@ -185,6 +195,8 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         status: formData.status,
         assignedTo: formData.assignedTo,
         url: formData.url,
+        scriptUrl: formData.scriptUrl,
+        recordingUrl: formData.recordingUrl,
         authDetails: formData.authDetails,
         slug: formData.slug,
         vertical: formData.vertical,
@@ -347,6 +359,26 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
                 sx={{ mb: 3 }}
                 value={formData.url}
                 onChange={handleTextChange}
+              />
+              
+              <TextField
+                name="scriptUrl"
+                label="Script URL"
+                fullWidth
+                sx={{ mb: 3 }}
+                value={formData.scriptUrl}
+                onChange={handleTextChange}
+                placeholder="Add URL to demo script document"
+              />
+              
+              <TextField
+                name="recordingUrl"
+                label="Recording URL"
+                fullWidth
+                sx={{ mb: 3 }}
+                value={formData.recordingUrl}
+                onChange={handleTextChange}
+                placeholder="Add URL to demo recording/video"
               />
               
               <TextField

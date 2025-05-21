@@ -6,7 +6,7 @@ import ThemeRegistry from "../theme/ThemeRegistry";
 import AppBar from "../components/AppBar";
 import LeftNavDrawer from "../components/ui/LeftNavDrawer";
 import { Box, CssBaseline, Button, Container, Typography } from "@mui/material";
-import { auth0 } from "@/lib/auth0";
+// import { auth0 } from "@/lib/auth0";
 
 const inter = Inter({ subsets: ["latin"] });
 

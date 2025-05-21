@@ -20,14 +20,14 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth0.getSession();
+  // const session = await auth0.getSession();
 
   return (
     <html lang="en">
       <body className={inter.className} style={{ backgroundColor: '#f5f5f5' }}>
         <ThemeRegistry>
           <CssBaseline />
-          {session ? (
+          {true ? (
             // Show full app layout when authenticated
             <Box sx={{ display: 'flex', minHeight: '100vh' }}>
               <AppBar />

@@ -33,10 +33,9 @@ class MockAuth0Client {
 export const auth0 = isDev 
   ? new MockAuth0Client() as unknown as Auth0Client
   : new Auth0Client({
-      // These commented values will be used in production
-      // domain: process.env.AUTH0_DOMAIN,
-      // clientId: process.env.AUTH0_CLIENT_ID,
-      // clientSecret: process.env.AUTH0_CLIENT_SECRET,
-      // appBaseUrl: process.env.APP_BASE_URL,
-      // secret: process.env.AUTH0_SECRET,
+      domain: process.env.AUTH0_DOMAIN || '',
+      clientId: process.env.AUTH0_CLIENT_ID || '',
+      clientSecret: process.env.AUTH0_CLIENT_SECRET || '',
+      appBaseUrl: process.env.APP_BASE_URL || '',
+      secret: process.env.AUTH0_SECRET || '',
     });

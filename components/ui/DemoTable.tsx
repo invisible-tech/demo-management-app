@@ -51,6 +51,10 @@ const formatStatus = (status: string) => {
   return status.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase());
 };
 
+const formatType = (type: string) => {
+  return type.charAt(0).toUpperCase() + type.slice(1);
+};
+
 interface DemoTableProps {
   demos: Demo[];
   verticals: string[];
@@ -63,10 +67,14 @@ export default function DemoTable({ demos, verticals, clients, statuses }: DemoT
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [filters, setFilters] = useState({
     status: '',
+    type: '',
     vertical: '',
     client: '',
     search: '',
   });
+  
+  // Demo types for filter
+  const demoTypes = ['general', 'specific'];
 
   // Handle filter changes
   const handleFilterChange = (filterName: keyof typeof filters) => (
@@ -83,6 +91,9 @@ export default function DemoTable({ demos, verticals, clients, statuses }: DemoT
   const filteredDemos = demos.filter((demo) => {
     // Status filter
     if (filters.status && demo.status !== filters.status) return false;
+    
+    // Type filter
+    if (filters.type && demo.type !== filters.type) return false;
     
     // Vertical filter
     if (filters.vertical && demo.vertical !== filters.vertical) return false;
@@ -161,6 +172,22 @@ export default function DemoTable({ demos, verticals, clients, statuses }: DemoT
         </FormControl>
         
         <FormControl size="small" sx={{ minWidth: 150 }}>
+          <InputLabel>Type</InputLabel>
+          <Select
+            value={filters.type}
+            label="Type"
+            onChange={handleFilterChange('type') as any}
+          >
+            <MenuItem value="">All</MenuItem>
+            {demoTypes.map((type) => (
+              <MenuItem key={type} value={type}>
+                {formatType(type)}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        
+        <FormControl size="small" sx={{ minWidth: 150 }}>
           <InputLabel>Vertical</InputLabel>
           <Select
             value={filters.vertical}
@@ -201,6 +228,7 @@ export default function DemoTable({ demos, verticals, clients, statuses }: DemoT
               <TableCell sx={{ fontWeight: 'bold' }}>Title</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Client</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Type</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Vertical</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Assigned To</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Due Date</TableCell>
@@ -232,6 +260,7 @@ export default function DemoTable({ demos, verticals, clients, statuses }: DemoT
                       color={getStatusColor(demo.status)} 
                     />
                   </TableCell>
+                  <TableCell>{formatType(demo.type) || '-'}</TableCell>
                   <TableCell>{demo.vertical || '-'}</TableCell>
                   <TableCell>{demo.assignedTo || '-'}</TableCell>
                   <TableCell>

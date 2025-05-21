@@ -77,6 +77,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
     dueDate: '',
     stakeholders: '',
     status: isRequest ? 'requested' : 'ready',
+    type: 'general', // Default type
     url: '',
     scriptUrl: '',
     recordingUrl: '',
@@ -107,6 +108,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         dueDate: demo.dueDate || '',
         stakeholders: '',
         status: demo.status || 'requested',
+        type: demo.type || 'general',
         url: demo.url || '',
         scriptUrl: demo.scriptUrl || '',
         recordingUrl: demo.recordingUrl || '',
@@ -148,6 +150,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         title: formData.title || 'Demo Request',
         description: formData.description,
         status: 'requested',
+        type: formData.type,
         assignedTo: 'n/a',
         url: '',
         scriptUrl: '',
@@ -161,6 +164,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         title: formData.title,
         description: formData.description,
         status: formData.status,
+        type: formData.type,
         assignedTo: formData.assignedTo,
         url: formData.url,
         scriptUrl: formData.scriptUrl,
@@ -177,6 +181,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         title: formData.title,
         description: formData.description,
         status: formData.status,
+        type: formData.type,
         assignedTo: formData.assignedTo,
         url: formData.url,
         scriptUrl: formData.scriptUrl,
@@ -193,6 +198,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         title: formData.title,
         description: formData.description,
         status: formData.status,
+        type: formData.type,
         assignedTo: formData.assignedTo,
         url: formData.url,
         scriptUrl: formData.scriptUrl,
@@ -236,6 +242,22 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
               />
             )}
           </Box>
+
+          {isRegister && (
+            <FormControl fullWidth sx={{ mt: 3, mb: 3 }}>
+              <InputLabel id="type-label-register">Demo Type</InputLabel>
+              <Select
+                labelId="type-label-register"
+                name="type"
+                value={formData.type}
+                label="Demo Type"
+                onChange={handleSelectChange}
+              >
+                <MenuItem value="general">General</MenuItem>
+                <MenuItem value="specific">Specific</MenuItem>
+              </Select>
+            </FormControl>
+          )}
 
           {(isEdit || isRegister || isSubmit) && (
             <TextField
@@ -305,6 +327,22 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
                   />
                 )}
               </Box>
+              
+              {!isRegister && (
+                <FormControl fullWidth sx={{ mb: 3, mt: isRegister ? 3 : 0 }}>
+                  <InputLabel id="type-label">Demo Type</InputLabel>
+                  <Select
+                    labelId="type-label"
+                    name="type"
+                    value={formData.type}
+                    label="Demo Type"
+                    onChange={handleSelectChange}
+                  >
+                    <MenuItem value="general">General</MenuItem>
+                    <MenuItem value="specific">Specific</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
               
               {!isRegister && (
                 <TextField

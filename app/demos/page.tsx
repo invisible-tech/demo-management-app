@@ -1,8 +1,8 @@
 import { Suspense } from "react"
 import { getAllDemos } from "@/lib/db"
 import { Demo } from "@/lib/schema"
-import { Box, Typography, Container, Paper, Button } from '@mui/material';
-import DemoTable from "@/components/ui/DemoTable"
+import { Box, Typography, Button } from '@mui/material';
+import DemoTabs from "@/components/ui/DemoTabs"
 import Link from "next/link"
 
 export const dynamic = "force-dynamic"
@@ -99,7 +99,7 @@ async function DemoListWrapper({
   const statuses = Array.from(new Set(allDemos.map(demo => demo.status).filter(Boolean) as string[]));
 
   return filteredDemos.length ? (
-    <DemoTable 
+    <DemoTabs 
       demos={filteredDemos} 
       verticals={verticals}
       clients={clients}

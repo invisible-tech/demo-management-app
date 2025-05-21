@@ -8,6 +8,11 @@ export const demoStatusEnum = [
   "archived"
 ] as const
 
+export const demoTypeEnum = [
+  "general",
+  "specific"
+] as const
+
 // Schema for demo data validation
 export const demoSchema = z.object({
   id: z.string(),
@@ -15,6 +20,7 @@ export const demoSchema = z.object({
   slug: z.string().optional(),
   description: z.string().optional(),
   status: z.enum(demoStatusEnum).default("requested"),
+  type: z.enum(demoTypeEnum).default("general"),
   client: z.string().optional(),
   assignedTo: z.string().optional(),
   useCase: z.string().optional(),
@@ -39,6 +45,7 @@ export const updateDemoSchema = createDemoSchema.partial()
 
 export const filterDemoSchema = z.object({
   status: z.enum(demoStatusEnum).optional(),
+  type: z.enum(demoTypeEnum).optional(),
   vertical: z.string().optional(),
   assignedTo: z.string().optional(),
   search: z.string().optional(),

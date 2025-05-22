@@ -1,7 +1,7 @@
-// import { auth0 } from "./lib/auth0";
 import { NextRequest, NextResponse } from 'next/server';
 import { redis, KEYS } from '@/lib/db';
 import { Demo } from '@/lib/schema';
+import { auth0 } from './lib/auth0';
 
 export async function middleware(request: NextRequest) {
   // Get the pathname from the URL
@@ -12,7 +12,7 @@ export async function middleware(request: NextRequest) {
 
   // Always allow auth routes to pass through to Auth0 middleware
   if (pathname.startsWith('/auth')) {
-    // return await auth0.middleware(request);
+    return await auth0.middleware(request);
   }
   
   // Skip authentication for static files and API routes
@@ -26,9 +26,9 @@ export async function middleware(request: NextRequest) {
   // Apply Auth0 authentication for all routes except the skipped ones
   if (!skipAuthPaths && !isDev) {
     // Only check authentication in production mode
-    // const session = await auth0.getSession();
+    const session = await auth0.getSession();
     // If no session and not accessing auth routes, redirect to login
-    if (!true && !pathname.startsWith('/auth')) {
+    if (!session && !pathname.startsWith('/auth')) {
       const url = request.nextUrl.clone();
       url.pathname = '/auth/login';
       url.searchParams.set('returnTo', request.nextUrl.pathname);

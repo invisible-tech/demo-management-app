@@ -6,7 +6,7 @@ import ThemeRegistry from "../theme/ThemeRegistry";
 import AppBar from "../components/AppBar";
 import LeftNavDrawer from "../components/ui/LeftNavDrawer";
 import { Box, CssBaseline, Button, Container, Typography } from "@mui/material";
-// import { auth0 } from "@/lib/auth0";
+import { auth0 } from "@/lib/auth0";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,14 +20,14 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const session = await auth0.getSession();
+  const session = await auth0.getSession();
 
   return (
     <html lang="en">
       <body className={inter.className} style={{ backgroundColor: '#f5f5f5' }}>
         <ThemeRegistry>
           <CssBaseline />
-          {true ? (
+          {session ? (
             // Show full app layout when authenticated
             <Box sx={{ display: 'flex', minHeight: '100vh' }}>
               <AppBar />

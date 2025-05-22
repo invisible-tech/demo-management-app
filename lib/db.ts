@@ -46,8 +46,37 @@ export async function getAllDemos() {
       pipeline.hgetall(KEYS.DEMO_DETAIL(id))
     })
     
-    const demos = await pipeline.exec()
-    return demos.filter(Boolean)
+    const demosRaw = await pipeline.exec()
+    
+    // Process and normalize data
+    const demos = demosRaw.filter(Boolean).map(demo => {
+      // Type assertion for demo as Record<string, any>
+      const demoObj = demo as Record<string, any>;
+      
+      // Ensure tags is an array (it might be stored as a string)
+      if (demoObj.tags && typeof demoObj.tags === 'string') {
+        try {
+          demoObj.tags = JSON.parse(demoObj.tags);
+        } catch (e) {
+          // If parsing fails, default to empty array
+          demoObj.tags = [];
+        }
+      }
+      
+      // Ensure tags is an array even if it's undefined
+      if (!demoObj.tags) {
+        demoObj.tags = [];
+      }
+      
+      // Set default type to "general" if undefined
+      if (!demoObj.type) {
+        demoObj.type = "general";
+      }
+      
+      return demoObj;
+    });
+    
+    return demos;
   } catch (error) {
     console.error("Failed to get demos:", error)
     return []

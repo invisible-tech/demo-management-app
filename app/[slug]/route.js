@@ -88,7 +88,7 @@ export async function GET(
       </style>
     </head>
     <body>
-      <iframe src="${cacheBusterUrl}" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; camera; microphone; geolocation" allowfullscreen></iframe>
+      <iframe src="${cacheBusterUrl}?embed=true" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; camera; microphone; geolocation" allowfullscreen></iframe>
     </body>
     </html>
     `;

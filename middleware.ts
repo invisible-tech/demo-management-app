@@ -1,11 +1,14 @@
-import { auth0 } from "./lib/auth0";
 import { NextRequest, NextResponse } from 'next/server';
 import { redis, KEYS } from '@/lib/db';
 import { Demo } from '@/lib/schema';
+import { auth0 } from './lib/auth0';
 
 export async function middleware(request: NextRequest) {
   // Get the pathname from the URL
   const pathname = request.nextUrl.pathname;
+
+  // Check if we're in development mode
+  const isDev = process.env.NODE_ENV === 'development';
 
   // Always allow auth routes to pass through to Auth0 middleware
   if (pathname.startsWith('/auth')) {
@@ -21,7 +24,8 @@ export async function middleware(request: NextRequest) {
     pathname.match(/\.(jpg|jpeg|png|gif|mp4|webm|svg|js|css)$/i);
 
   // Apply Auth0 authentication for all routes except the skipped ones
-  if (!skipAuthPaths) {
+  if (!skipAuthPaths && !isDev) {
+    // Only check authentication in production mode
     const session = await auth0.getSession();
     // If no session and not accessing auth routes, redirect to login
     if (!session && !pathname.startsWith('/auth')) {

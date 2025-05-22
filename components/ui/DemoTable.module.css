@@ -1,0 +1,84 @@
+/* Table layout */
+.tableContainer {
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Table header styles */
+.headerCell {
+  font-weight: bold;
+}
+
+.titleColumn {
+  width: 18%;
+}
+
+.verticalColumn {
+  width: 12%;
+}
+
+.clientColumn {
+  width: 12%;
+}
+
+.statusColumn {
+  width: 12%;
+}
+
+.assignedToColumn {
+  width: 10%;
+}
+
+.actionColumn {
+  width: 8%;
+}
+
+.demoColumn {
+  width: 8%;
+}
+
+.scriptColumn {
+  width: 8%;
+}
+
+.recordingColumn {
+  width: 10%;
+}
+
+.dueDateColumn {
+  width: 8%;
+}
+
+/* Button styles */
+.actionButton {
+  min-width: 80px !important;
+}
+
+.centered {
+  text-align: center;
+}
+
+/* Empty state message */
+.emptyMessage {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+}
+
+/* Filter section */
+.filterContainer {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  padding: 16px !important;
+}
+
+.searchField {
+  min-width: 200px !important;
+  margin-right: 8px !important;
+}
+
+.filterSelect {
+  min-width: 150px !important;
+  margin-right: 8px !important;
+} 

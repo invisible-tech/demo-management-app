@@ -77,6 +77,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
     dueDate: '',
     stakeholders: '',
     status: isRequest ? 'requested' : 'ready',
+    type: 'general', // Default type
     url: '',
     scriptUrl: '',
     recordingUrl: '',
@@ -87,6 +88,11 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
     useCase: ''
   });
 
+  // Form validation errors
+  const [errors, setErrors] = useState<{
+    clientVertical?: string;
+  }>({});
+  
   // Update slug preview when slug changes
   useEffect(() => {
     if (formData.slug) {
@@ -107,6 +113,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         dueDate: demo.dueDate || '',
         stakeholders: '',
         status: demo.status || 'requested',
+        type: demo.type || 'general',
         url: demo.url || '',
         scriptUrl: demo.scriptUrl || '',
         recordingUrl: demo.recordingUrl || '',
@@ -140,6 +147,29 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Reset errors
+    setErrors({});
+    
+    // Validate that either client OR vertical is set, but not both
+    const hasClient = !!formData.requestedBy?.trim();
+    const hasVertical = !!formData.vertical?.trim();
+    
+    if (isEdit || isRegister) {
+      if (hasClient && hasVertical) {
+        setErrors({
+          clientVertical: "Please specify either Client OR Vertical, but not both. This helps categorize the demo correctly."
+        });
+        return; // Don't proceed with submission
+      }
+      
+      if (!hasClient && !hasVertical) {
+        setErrors({
+          clientVertical: "Please specify either Client OR Vertical. At least one is required."
+        });
+        return; // Don't proceed with submission
+      }
+    }
+    
     // Prepare data for submission based on form type
     let submissionData = {};
     
@@ -148,6 +178,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         title: formData.title || 'Demo Request',
         description: formData.description,
         status: 'requested',
+        type: formData.type,
         assignedTo: 'n/a',
         url: '',
         scriptUrl: '',
@@ -161,6 +192,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         title: formData.title,
         description: formData.description,
         status: formData.status,
+        type: formData.type,
         assignedTo: formData.assignedTo,
         url: formData.url,
         scriptUrl: formData.scriptUrl,
@@ -177,6 +209,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         title: formData.title,
         description: formData.description,
         status: formData.status,
+        type: formData.type,
         assignedTo: formData.assignedTo,
         url: formData.url,
         scriptUrl: formData.scriptUrl,
@@ -193,6 +226,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         title: formData.title,
         description: formData.description,
         status: formData.status,
+        type: formData.type,
         assignedTo: formData.assignedTo,
         url: formData.url,
         scriptUrl: formData.scriptUrl,
@@ -211,6 +245,20 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
   return (
     <FormPaper elevation={3}>
       <Box component="form" onSubmit={handleSubmit}>
+        {errors.clientVertical && (
+          <Box 
+            sx={{ 
+              mb: 3, 
+              p: 2, 
+              bgcolor: 'error.light', 
+              color: 'error.contrastText',
+              borderRadius: 1
+            }}
+          >
+            <Typography>{errors.clientVertical}</Typography>
+          </Box>
+        )}
+        
         <FormSection>
           
           <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' } }}>
@@ -229,13 +277,31 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
                 name="requestedBy"
                 label={isEdit ? 'Client' : 'Requested By'}
                 fullWidth
-                required
+                required={isEdit || isRegister ? false : true}
                 variant="outlined"
                 value={formData.requestedBy}
                 onChange={handleTextChange}
+                error={Boolean(errors.clientVertical) && isEdit}
+                helperText={isEdit ? "Specify either Client OR Vertical, not both" : ""}
               />
             )}
           </Box>
+
+          {isRegister && (
+            <FormControl fullWidth sx={{ mt: 3, mb: 3 }}>
+              <InputLabel id="type-label-register">Demo Type</InputLabel>
+              <Select
+                labelId="type-label-register"
+                name="type"
+                value={formData.type}
+                label="Demo Type"
+                onChange={handleSelectChange}
+              >
+                <MenuItem value="general">General</MenuItem>
+                <MenuItem value="specific">Specific</MenuItem>
+              </Select>
+            </FormControl>
+          )}
 
           {(isEdit || isRegister || isSubmit) && (
             <TextField
@@ -294,17 +360,48 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
                   onChange={handleTextChange}
                 />
                 
-                {!isRegister && (
-                  <TextField
-                    name="vertical"
-                    label="Vertical"
-                    fullWidth
-                    variant="outlined"
-                    value={formData.vertical}
-                    onChange={handleTextChange}
-                  />
-                )}
+                <TextField
+                  name="vertical"
+                  label="Vertical"
+                  fullWidth
+                  variant="outlined"
+                  value={formData.vertical}
+                  onChange={handleTextChange}
+                  error={Boolean(errors.clientVertical) && (isEdit || isRegister)}
+                  helperText={(isEdit || isRegister) ? "Choose one: Either fill Client OR Vertical field" : ""}
+                />
               </Box>
+              
+              {/* Client field for register form */}
+              {isRegister && (
+                <TextField
+                  name="requestedBy"
+                  label="Client"
+                  fullWidth
+                  variant="outlined"
+                  value={formData.requestedBy}
+                  onChange={handleTextChange}
+                  error={Boolean(errors.clientVertical)}
+                  helperText="Choose one: Either fill Client OR Vertical field"
+                  sx={{ mb: 3 }}
+                />
+              )}
+              
+              {!isRegister && (
+                <FormControl fullWidth sx={{ mb: 3, mt: isRegister ? 3 : 0 }}>
+                  <InputLabel id="type-label">Demo Type</InputLabel>
+                  <Select
+                    labelId="type-label"
+                    name="type"
+                    value={formData.type}
+                    label="Demo Type"
+                    onChange={handleSelectChange}
+                  >
+                    <MenuItem value="general">General</MenuItem>
+                    <MenuItem value="specific">Specific</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
               
               {!isRegister && (
                 <TextField

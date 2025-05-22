@@ -88,6 +88,11 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
     useCase: ''
   });
 
+  // Form validation errors
+  const [errors, setErrors] = useState<{
+    clientVertical?: string;
+  }>({});
+  
   // Update slug preview when slug changes
   useEffect(() => {
     if (formData.slug) {
@@ -141,6 +146,29 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Reset errors
+    setErrors({});
+    
+    // Validate that either client OR vertical is set, but not both
+    const hasClient = !!formData.requestedBy?.trim();
+    const hasVertical = !!formData.vertical?.trim();
+    
+    if (isEdit || isRegister) {
+      if (hasClient && hasVertical) {
+        setErrors({
+          clientVertical: "Please specify either Client OR Vertical, but not both. This helps categorize the demo correctly."
+        });
+        return; // Don't proceed with submission
+      }
+      
+      if (!hasClient && !hasVertical) {
+        setErrors({
+          clientVertical: "Please specify either Client OR Vertical. At least one is required."
+        });
+        return; // Don't proceed with submission
+      }
+    }
     
     // Prepare data for submission based on form type
     let submissionData = {};
@@ -217,6 +245,20 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
   return (
     <FormPaper elevation={3}>
       <Box component="form" onSubmit={handleSubmit}>
+        {errors.clientVertical && (
+          <Box 
+            sx={{ 
+              mb: 3, 
+              p: 2, 
+              bgcolor: 'error.light', 
+              color: 'error.contrastText',
+              borderRadius: 1
+            }}
+          >
+            <Typography>{errors.clientVertical}</Typography>
+          </Box>
+        )}
+        
         <FormSection>
           
           <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' } }}>
@@ -235,10 +277,12 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
                 name="requestedBy"
                 label={isEdit ? 'Client' : 'Requested By'}
                 fullWidth
-                required
+                required={isEdit || isRegister ? false : true}
                 variant="outlined"
                 value={formData.requestedBy}
                 onChange={handleTextChange}
+                error={Boolean(errors.clientVertical) && isEdit}
+                helperText={isEdit ? "Specify either Client OR Vertical, not both" : ""}
               />
             )}
           </Box>
@@ -316,17 +360,32 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
                   onChange={handleTextChange}
                 />
                 
-                {!isRegister && (
-                  <TextField
-                    name="vertical"
-                    label="Vertical"
-                    fullWidth
-                    variant="outlined"
-                    value={formData.vertical}
-                    onChange={handleTextChange}
-                  />
-                )}
+                <TextField
+                  name="vertical"
+                  label="Vertical"
+                  fullWidth
+                  variant="outlined"
+                  value={formData.vertical}
+                  onChange={handleTextChange}
+                  error={Boolean(errors.clientVertical) && (isEdit || isRegister)}
+                  helperText={(isEdit || isRegister) ? "Choose one: Either fill Client OR Vertical field" : ""}
+                />
               </Box>
+              
+              {/* Client field for register form */}
+              {isRegister && (
+                <TextField
+                  name="requestedBy"
+                  label="Client"
+                  fullWidth
+                  variant="outlined"
+                  value={formData.requestedBy}
+                  onChange={handleTextChange}
+                  error={Boolean(errors.clientVertical)}
+                  helperText="Choose one: Either fill Client OR Vertical field"
+                  sx={{ mb: 3 }}
+                />
+              )}
               
               {!isRegister && (
                 <FormControl fullWidth sx={{ mb: 3, mt: isRegister ? 3 : 0 }}>

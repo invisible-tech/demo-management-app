@@ -337,13 +337,13 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
                   
                   {/* Demo URL button */}
                   <TableCell className={styles.centered}>
-                    {isValidUrl(demo.url) ? (
+                    {demo.slug ? (
                       <Button
                         variant="contained"
                         size="small"
                         color="success"
                         component="a"
-                        href={demo.url}
+                        href={`/${demo.slug}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className={styles.actionButton}

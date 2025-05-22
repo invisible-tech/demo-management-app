@@ -1,0 +1,36 @@
+.container {
+  width: 100%;
+}
+
+.tabsContainer {
+  /* Let MUI handle the border through sx prop */
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background-color: #f5f5f5;
+}
+
+.tabs {
+  width: 100%;
+  max-width: 1200px;
+}
+
+.tabItem {
+  text-transform: none;
+  font-weight: 500;
+  min-width: 120px;
+}
+
+.tabPanel {
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+.noResultsContainer {
+  text-align: center;
+  padding-top: 16px;
+  padding-bottom: 16px;
+} 

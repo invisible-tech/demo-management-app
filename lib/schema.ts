@@ -13,8 +13,8 @@ export const demoTypeEnum = [
   "specific"
 ] as const
 
-// Schema for demo data validation
-export const demoSchema = z.object({
+// Base schema without refinement
+export const demoBaseSchema = z.object({
   id: z.string(),
   title: z.string().optional().default("Demo Request"),
   slug: z.string().optional(),
@@ -33,15 +33,38 @@ export const demoSchema = z.object({
   updatedAt: z.string(), // ISO date string
   vertical: z.string().optional(),
   tags: z.array(z.string()).default([]),
+});
+
+// Schema for demo data validation with refinement
+export const demoSchema = demoBaseSchema.refine(data => !!data.client || !!data.vertical, {
+  message: "Either client or vertical must be provided",
+  path: ["clientOrVertical"],
 })
 
-export const createDemoSchema = demoSchema.omit({ 
+export const createDemoSchema = demoBaseSchema.omit({ 
   id: true,
   createdAt: true,
   updatedAt: true
+}).refine(data => !!data.client || !!data.vertical, {
+  message: "Either client or vertical must be provided",
+  path: ["clientOrVertical"],
 })
 
-export const updateDemoSchema = createDemoSchema.partial()
+// Make all fields optional for updates but still enforce the client or vertical rule
+export const updateDemoSchema = demoBaseSchema
+  .omit({ id: true, createdAt: true, updatedAt: true })
+  .partial()
+  .refine(data => {
+    // If neither client nor vertical is included in the update, that's fine
+    // If at least one is included, at least one must have a value
+    if (data.client === undefined && data.vertical === undefined) {
+      return true;
+    }
+    return !!data.client || !!data.vertical;
+  }, {
+    message: "If updating client or vertical, at least one must have a value",
+    path: ["clientOrVertical"],
+  })
 
 export const filterDemoSchema = z.object({
   status: z.enum(demoStatusEnum).optional(),

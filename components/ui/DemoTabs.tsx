@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Box, Tabs, Tab } from '@mui/material';
 import DemoTable from './DemoTable';
 import { Demo } from '@/lib/schema';
+import styles from './DemoTabs.module.css';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -22,7 +23,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`demo-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+      {value === index && <Box className={styles.tabPanel}>{children}</Box>}
     </div>
   );
 }
@@ -44,38 +45,81 @@ export default function DemoTabs({
     setValue(newValue);
   };
 
-  // Filter demos for each tab
+  // Helper function to determine if a demo is complete
+  const isDemoComplete = (demo: Demo): boolean => {
+    return !!demo.url && !!demo.scriptUrl && !!demo.recordingUrl;
+  };
+  
+  // Helper function to determine if a demo is general or client-specific
+  const isClientSpecific = (demo: Demo): boolean => {
+    return !!demo.client;
+  };
+
+  // Filter demos for each tab - now using client/vertical to determine type
   const generalCompleteDemos = demos.filter(
-    demo => demo.type === 'general' && demo.status === 'ready'
+    demo => !isClientSpecific(demo) && isDemoComplete(demo)
   );
   
   const generalInProgressDemos = demos.filter(
-    demo => demo.type === 'general' && demo.status === 'in_progress'
+    demo => !isClientSpecific(demo) && !isDemoComplete(demo)
   );
   
-  const specificCompleteDemos = demos.filter(
-    demo => demo.type === 'specific' && demo.status === 'ready'
+  const clientSpecificCompleteDemos = demos.filter(
+    demo => isClientSpecific(demo) && isDemoComplete(demo)
   );
   
-  const specificInProgressDemos = demos.filter(
-    demo => demo.type === 'specific' && demo.status === 'in_progress'
+  const clientSpecificInProgressDemos = demos.filter(
+    demo => isClientSpecific(demo) && !isDemoComplete(demo)
   );
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+    <Box className={styles.container}>
+      <Box 
+        className={styles.tabsContainer}
+        sx={{ 
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+      >
         <Tabs 
           value={value} 
           onChange={handleChange} 
           aria-label="demo category tabs"
           variant="scrollable"
           scrollButtons="auto"
+          className={styles.tabs}
+          centered
+          TabIndicatorProps={{
+            style: {
+              backgroundColor: '#1976d2',
+            }
+          }}
         >
-          <Tab label={`General Complete (${generalCompleteDemos.length})`} id="demo-tab-0" />
-          <Tab label={`General In Progress (${generalInProgressDemos.length})`} id="demo-tab-1" />
-          <Tab label={`Specific Complete (${specificCompleteDemos.length})`} id="demo-tab-2" />
-          <Tab label={`Specific In Progress (${specificInProgressDemos.length})`} id="demo-tab-3" />
-          <Tab label={`All Demos (${demos.length})`} id="demo-tab-4" />
+          <Tab 
+            label={`General Complete (${generalCompleteDemos.length})`} 
+            id="demo-tab-0" 
+            className={styles.tabItem}
+          />
+          <Tab 
+            label={`General In Progress (${generalInProgressDemos.length})`} 
+            id="demo-tab-1" 
+            className={styles.tabItem}
+          />
+          <Tab 
+            label={`Client-Specific Complete (${clientSpecificCompleteDemos.length})`} 
+            id="demo-tab-2" 
+            className={styles.tabItem}
+          />
+          <Tab 
+            label={`Client-Specific In Progress (${clientSpecificInProgressDemos.length})`} 
+            id="demo-tab-3" 
+            className={styles.tabItem}
+          />
+          <Tab 
+            label={`All Demos (${demos.length})`} 
+            id="demo-tab-4" 
+            className={styles.tabItem}
+          />
         </Tabs>
       </Box>
       
@@ -85,6 +129,7 @@ export default function DemoTabs({
           verticals={verticals} 
           clients={clients} 
           statuses={statuses} 
+          tabType="general"
         />
       </TabPanel>
       
@@ -94,24 +139,27 @@ export default function DemoTabs({
           verticals={verticals} 
           clients={clients} 
           statuses={statuses} 
+          tabType="general"
         />
       </TabPanel>
       
       <TabPanel value={value} index={2}>
         <DemoTable 
-          demos={specificCompleteDemos} 
+          demos={clientSpecificCompleteDemos} 
           verticals={verticals} 
           clients={clients} 
           statuses={statuses} 
+          tabType="client-specific"
         />
       </TabPanel>
       
       <TabPanel value={value} index={3}>
         <DemoTable 
-          demos={specificInProgressDemos} 
+          demos={clientSpecificInProgressDemos} 
           verticals={verticals} 
           clients={clients} 
           statuses={statuses} 
+          tabType="client-specific"
         />
       </TabPanel>
       
@@ -121,6 +169,7 @@ export default function DemoTabs({
           verticals={verticals} 
           clients={clients} 
           statuses={statuses} 
+          tabType="all"
         />
       </TabPanel>
     </Box>

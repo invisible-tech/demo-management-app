@@ -27,6 +27,7 @@ import {
 import { ExternalLink, Link2Off, FileText, Video } from 'lucide-react';
 import Link from 'next/link';
 import { Demo } from '@/lib/schema';
+import styles from './DemoTable.module.css';
 
 type StatusColor = 'success' | 'warning' | 'error' | 'info' | 'default';
 
@@ -43,7 +44,7 @@ const getStatusColor = (status: string): StatusColor => {
     case 'archived':
       return 'default';
     default:
-      return 'default';
+      return status.includes('In Progress') ? 'warning' : 'default';
   }
 };
 
@@ -55,14 +56,40 @@ const formatType = (type: string) => {
   return type.charAt(0).toUpperCase() + type.slice(1);
 };
 
+// Get detailed status based on missing items
+const getDetailedStatus = (demo: Demo): string => {
+  const hasUrl = !!demo.url;
+  const hasScript = !!demo.scriptUrl;
+  const hasRecording = !!demo.recordingUrl;
+  
+  // Check if all items are present
+  if (hasUrl && hasScript && hasRecording) {
+    return 'ready';
+  }
+  
+  // Count missing items
+  const missingItems = [];
+  if (!hasUrl) missingItems.push('demo URL');
+  if (!hasScript) missingItems.push('script');
+  if (!hasRecording) missingItems.push('recording');
+  
+  // Return appropriate status message
+  if (missingItems.length >= 2) {
+    return 'In Progress (2 or more)';
+  } else {
+    return `In Progress (needs ${missingItems[0]})`;
+  }
+};
+
 interface DemoTableProps {
   demos: Demo[];
   verticals: string[];
   clients: string[];
   statuses: string[];
+  tabType?: 'general' | 'client-specific' | 'all';
 }
 
-export default function DemoTable({ demos, verticals, clients, statuses }: DemoTableProps) {
+export default function DemoTable({ demos, verticals, clients, statuses, tabType = 'all' }: DemoTableProps) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [filters, setFilters] = useState({
@@ -72,6 +99,15 @@ export default function DemoTable({ demos, verticals, clients, statuses }: DemoT
     client: '',
     search: '',
   });
+  
+  // Check if all demos in this table are complete
+  const isCompleteTable = demos.length > 0 && demos.every(demo => 
+    !!demo.url && !!demo.scriptUrl && !!demo.recordingUrl
+  );
+  
+  // Determine which columns to show based on tab type
+  const showClientColumn = tabType !== 'general';
+  const showVerticalColumn = tabType !== 'client-specific';
   
   // Demo types for filter
   const demoTypes = ['general', 'specific'];
@@ -142,20 +178,44 @@ export default function DemoTable({ demos, verticals, clients, statuses }: DemoT
     }
   };
 
+  // Display URL in a readable format
+  const formatUrl = (url: string | undefined): string => {
+    if (!url) return '-';
+    try {
+      const urlObj = new URL(url);
+      return urlObj.hostname + (urlObj.pathname !== "/" ? urlObj.pathname : "");
+    } catch (e) {
+      return url;
+    }
+  };
+
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+    <Paper className={styles.tableContainer}>
       {/* Filters */}
-      <Box sx={{ p: 1, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+      <Box 
+        className={styles.filterContainer}
+        sx={{ 
+          p: 2, 
+          display: 'flex', 
+          flexWrap: 'wrap', 
+          gap: 1 
+        }}
+      >
         <TextField
           label="Search"
           variant="outlined"
           size="small"
           value={filters.search}
           onChange={handleFilterChange('search')}
-          sx={{ minWidth: 200 }}
+          className={styles.searchField}
+          sx={{ minWidth: '200px' }}
         />
         
-        <FormControl size="small" sx={{ minWidth: 150 }}>
+        <FormControl 
+          size="small" 
+          className={styles.filterSelect}
+          sx={{ minWidth: '150px' }}
+        >
           <InputLabel>Status</InputLabel>
           <Select
             value={filters.status}
@@ -171,53 +231,49 @@ export default function DemoTable({ demos, verticals, clients, statuses }: DemoT
           </Select>
         </FormControl>
         
-        <FormControl size="small" sx={{ minWidth: 150 }}>
-          <InputLabel>Type</InputLabel>
-          <Select
-            value={filters.type}
-            label="Type"
-            onChange={handleFilterChange('type') as any}
+        {showVerticalColumn && (
+          <FormControl 
+            size="small" 
+            className={styles.filterSelect}
+            sx={{ minWidth: '150px' }}
           >
-            <MenuItem value="">All</MenuItem>
-            {demoTypes.map((type) => (
-              <MenuItem key={type} value={type}>
-                {formatType(type)}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+            <InputLabel>Vertical</InputLabel>
+            <Select
+              value={filters.vertical}
+              label="Vertical"
+              onChange={handleFilterChange('vertical') as any}
+            >
+              <MenuItem value="">All</MenuItem>
+              {verticals.map((vertical) => (
+                <MenuItem key={vertical} value={vertical}>
+                  {vertical}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
         
-        <FormControl size="small" sx={{ minWidth: 150 }}>
-          <InputLabel>Vertical</InputLabel>
-          <Select
-            value={filters.vertical}
-            label="Vertical"
-            onChange={handleFilterChange('vertical') as any}
+        {showClientColumn && (
+          <FormControl 
+            size="small" 
+            className={styles.filterSelect}
+            sx={{ minWidth: '150px' }}
           >
-            <MenuItem value="">All</MenuItem>
-            {verticals.map((vertical) => (
-              <MenuItem key={vertical} value={vertical}>
-                {vertical}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        
-        <FormControl size="small" sx={{ minWidth: 150 }}>
-          <InputLabel>Client</InputLabel>
-          <Select
-            value={filters.client}
-            label="Client"
-            onChange={handleFilterChange('client') as any}
-          >
-            <MenuItem value="">All</MenuItem>
-            {clients.map((client) => (
-              <MenuItem key={client} value={client}>
-                {client}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+            <InputLabel>Client</InputLabel>
+            <Select
+              value={filters.client}
+              label="Client"
+              onChange={handleFilterChange('client') as any}
+            >
+              <MenuItem value="">All</MenuItem>
+              {clients.map((client) => (
+                <MenuItem key={client} value={client}>
+                  {client}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
       </Box>
       
       {/* Table */}
@@ -225,14 +281,23 @@ export default function DemoTable({ demos, verticals, clients, statuses }: DemoT
         <Table stickyHeader aria-label="demos table">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>Title</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Client</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Type</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Vertical</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Assigned To</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Due Date</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell>
+              <TableCell className={`${styles.headerCell} ${styles.titleColumn}`}>Title</TableCell>
+              {tabType === 'general' && showVerticalColumn && (
+                <TableCell className={`${styles.headerCell} ${styles.verticalColumn}`}>Vertical</TableCell>
+              )}
+              {showClientColumn && (
+                <TableCell className={`${styles.headerCell} ${styles.clientColumn}`}>Client</TableCell>
+              )}
+              <TableCell className={`${styles.headerCell} ${styles.statusColumn}`}>Status</TableCell>
+              {tabType !== 'general' && showVerticalColumn && (
+                <TableCell className={`${styles.headerCell} ${styles.verticalColumn}`}>Vertical</TableCell>
+              )}
+              <TableCell className={`${styles.headerCell} ${styles.assignedToColumn}`}>Assigned To</TableCell>
+              <TableCell className={`${styles.headerCell} ${styles.demoColumn}`}>Demo</TableCell>
+              <TableCell className={`${styles.headerCell} ${styles.scriptColumn}`}>Script</TableCell>
+              <TableCell className={`${styles.headerCell} ${styles.recordingColumn}`}>Recording</TableCell>
+              <TableCell className={`${styles.headerCell} ${styles.dueDateColumn}`}>Due Date</TableCell>
+              <TableCell className={`${styles.headerCell} ${styles.actionColumn}`}>Edit</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -252,85 +317,138 @@ export default function DemoTable({ demos, verticals, clients, statuses }: DemoT
                       </Typography>
                     )}
                   </TableCell>
-                  <TableCell>{demo.client || '-'}</TableCell>
+                  {tabType === 'general' && showVerticalColumn && (
+                    <TableCell>{demo.vertical || '-'}</TableCell>
+                  )}
+                  {showClientColumn && (
+                    <TableCell>{demo.client || '-'}</TableCell>
+                  )}
                   <TableCell>
                     <Chip 
-                      label={formatStatus(demo.status)} 
+                      label={formatStatus(getDetailedStatus(demo))} 
                       size="small" 
-                      color={getStatusColor(demo.status)} 
+                      color={getStatusColor(getDetailedStatus(demo))} 
                     />
                   </TableCell>
-                  <TableCell>{formatType(demo.type) || '-'}</TableCell>
-                  <TableCell>{demo.vertical || '-'}</TableCell>
+                  {tabType !== 'general' && showVerticalColumn && (
+                    <TableCell>{demo.vertical || '-'}</TableCell>
+                  )}
                   <TableCell>{demo.assignedTo || '-'}</TableCell>
+                  
+                  {/* Demo URL button */}
+                  <TableCell className={styles.centered}>
+                    {isValidUrl(demo.url) ? (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        color="success"
+                        component="a"
+                        href={demo.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.actionButton}
+                        sx={{ minWidth: '80px' }}
+                      >
+                        View
+                      </Button>
+                    ) : (
+                      <Button 
+                        variant="contained" 
+                        size="small" 
+                        color="error" 
+                        className={styles.actionButton}
+                        sx={{ minWidth: '80px' }}
+                      >
+                        Missing
+                      </Button>
+                    )}
+                  </TableCell>
+                  
+                  {/* Script button */}
+                  <TableCell className={styles.centered}>
+                    {isValidUrl(demo.scriptUrl) ? (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        color="success"
+                        component="a"
+                        href={demo.scriptUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.actionButton}
+                        sx={{ minWidth: '80px' }}
+                      >
+                        Script
+                      </Button>
+                    ) : (
+                      <Button 
+                        variant="contained" 
+                        size="small" 
+                        color="error" 
+                        className={styles.actionButton}
+                        sx={{ minWidth: '80px' }}
+                      >
+                        Missing
+                      </Button>
+                    )}
+                  </TableCell>
+                  
+                  {/* Recording button */}
+                  <TableCell className={styles.centered}>
+                    {isValidUrl(demo.recordingUrl) ? (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        color="success"
+                        component="a"
+                        href={demo.recordingUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.actionButton}
+                        sx={{ minWidth: '80px' }}
+                      >
+                        Recording
+                      </Button>
+                    ) : (
+                      <Button 
+                        variant="contained" 
+                        size="small" 
+                        color="error" 
+                        className={styles.actionButton}
+                        sx={{ minWidth: '80px' }}
+                      >
+                        Missing
+                      </Button>
+                    )}
+                  </TableCell>
+                  
                   <TableCell>
                     {demo.dueDate 
                       ? new Date(demo.dueDate).toLocaleDateString() 
                       : '-'}
                   </TableCell>
-                  <TableCell>
-                    <Stack direction="row" spacing={1}>
-                      {demo.slug ? (
-                        <Button 
-                          variant="outlined" 
-                          size="small"
-                          component={Link}
-                          href={`/${demo.slug}`}
-                        >
-                          View
-                        </Button>
-                      ) : null}
-                      
-                      {isValidUrl(demo.scriptUrl) && (
-                        <Tooltip title="View Script">
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            color="info"
-                            component="a"
-                            href={demo.scriptUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            startIcon={<FileText size={16} />}
-                          >
-                            Script
-                          </Button>
-                        </Tooltip>
-                      )}
-                      
-                      {isValidUrl(demo.recordingUrl) && (
-                        <Tooltip title="View Recording">
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            color="error"
-                            component="a"
-                            href={demo.recordingUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            startIcon={<Video size={16} />}
-                          >
-                            Recording
-                          </Button>
-                        </Tooltip>
-                      )}
-                      
-                      <Button 
-                        variant="outlined" 
-                        size="small"
-                        color="secondary"
-                        component={Link}
-                        href={`/demos/${demo.id}/edit`}
-                      >
-                        Edit
-                      </Button>
-                    </Stack>
+                  
+                  <TableCell className={styles.centered}>
+                    <Button 
+                      variant="outlined" 
+                      size="small"
+                      color="secondary"
+                      component={Link}
+                      href={`/demos/${demo.id}/edit`}
+                      className={styles.actionButton}
+                      sx={{ minWidth: '80px' }}
+                    >
+                      Edit
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7} align="center" sx={{ py: 3 }}>
+                <TableCell 
+                  colSpan={8 + (showClientColumn ? 1 : 0) + (showVerticalColumn ? 1 : 0)} 
+                  className={styles.emptyMessage}
+                >
                   No demos found matching the current filters
                 </TableCell>
               </TableRow>

@@ -295,6 +295,7 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
                 <TableCell className={`${styles.headerCell} ${styles.verticalColumn}`}>Vertical</TableCell>
               )}
               <TableCell className={`${styles.headerCell} ${styles.assignedToColumn}`}>Assigned To</TableCell>
+              <TableCell className={`${styles.headerCell} ${styles.createdByColumn}`}>Created By</TableCell>
               <TableCell className={`${styles.headerCell} ${styles.demoColumn}`}>Demo</TableCell>
               <TableCell className={`${styles.headerCell} ${styles.scriptColumn}`}>Script</TableCell>
               <TableCell className={`${styles.headerCell} ${styles.recordingColumn}`}>Recording</TableCell>
@@ -336,6 +337,7 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
                     <TableCell>{demo.vertical || '-'}</TableCell>
                   )}
                   <TableCell>{demo.assignedTo || '-'}</TableCell>
+                  <TableCell>{demo.createdBy || '-'}</TableCell>
                   
                   {/* Demo URL button */}
                   <TableCell className={styles.centered}>

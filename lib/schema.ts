@@ -35,6 +35,7 @@ export const demoBaseSchema = z.object({
   vertical: z.string().optional(),
   tags: z.array(z.string()).default([]),
   adminNotes: z.string().optional(),
+  createdBy: z.string().optional(), // Email of the user who created the demo
 });
 
 // Schema for demo data validation with refinement

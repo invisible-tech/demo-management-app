@@ -5,10 +5,10 @@ import FormData from 'form-data';
 // Initialize Mailgun client on the server side
 const mg = new Mailgun(FormData);
 const mailgun = mg.client({
-  username: 'Invisible Technologies',
-  key: process.env.MG_REST_API_TOKEN || '',
+  username: "api",
+  key: process.env.MG_REST_API_TOKEN || "",
 });
-
+console.log(process.env.MG_REST_API_TOKEN)
 // Email notification route
 export async function POST(request: NextRequest) {
   try {

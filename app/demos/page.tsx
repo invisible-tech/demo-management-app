@@ -6,6 +6,8 @@ import DemoTabs from "@/components/ui/DemoTabs"
 import Link from "next/link"
 
 export const dynamic = "force-dynamic"
+import * as dotenv from "dotenv"
+dotenv.config()
 
 export default async function DemosPage({
   searchParams,
@@ -72,8 +74,13 @@ async function DemoListWrapper({
   // Fetch demos with filters applied
   const allDemos = await getAllDemos() as Demo[]
   
+  // First filter out pending_approval demos unless specifically requested
+  const statusFilteredDemos = status === 'pending_approval'
+    ? allDemos
+    : allDemos.filter(demo => demo.status !== 'pending_approval');
+  
   // Apply filters - this is a fallback if the API filters don't work
-  const filteredDemos = allDemos.filter((demo) => {
+  const filteredDemos = statusFilteredDemos.filter((demo) => {
     if (status && demo.status !== status) return false
     if (vertical && demo.vertical !== vertical) return false
     if (assignedTo && demo.assignedTo !== assignedTo) return false

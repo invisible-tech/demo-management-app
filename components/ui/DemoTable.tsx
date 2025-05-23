@@ -43,6 +43,8 @@ const getStatusColor = (status: string): StatusColor => {
       return 'info';
     case 'archived':
       return 'default';
+    case 'pending_approval':
+      return 'warning';
     default:
       return status.includes('In Progress') ? 'warning' : 'default';
   }

@@ -73,6 +73,7 @@ function StatusBadge({ status }: { status: Demo["status"] }) {
     ready: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100",
     delivered: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100",
     archived: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
+    pending_approval: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100",
   }
 
   const style = statusStyles[status] || statusStyles.requested

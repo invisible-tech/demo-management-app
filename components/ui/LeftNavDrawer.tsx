@@ -20,8 +20,12 @@ import {
   ClipboardList, 
   BookOpen,
   Settings,
-  Layers
+  Layers,
+  Shield
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { auth0 } from '@/lib/auth0';
+import { checkAdminAccess } from '@/lib/admin';
 
 const drawerWidth = 240;
 
@@ -59,6 +63,7 @@ type NavigationItem = {
   label: string;
   href: string;
   icon: React.ReactNode;
+  adminOnly?: boolean;
 };
 
 const navigationItems: NavigationItem[] = [
@@ -68,10 +73,27 @@ const navigationItems: NavigationItem[] = [
   { label: 'Demo Status', href: '/demos/status', icon: <ListChecks size={20} /> },
   { label: 'Register Demo', href: '/demos/register', icon: <FileUp size={20} /> },
   { label: 'How to Demo', href: '/how-to-demo', icon: <BookOpen size={20} /> },
+  { label: 'Admin Dashboard', href: '/admin', icon: <Shield size={20} />, adminOnly: true },
 ];
 
 export default function LeftNavDrawer() {
   const pathname = usePathname();
+  const [isAdmin, setIsAdmin] = useState(false);
+  
+  // Check if user is admin
+  useEffect(() => {
+    const checkAdmin = async () => {
+      try {
+        const session = await auth0.getSession();
+        const hasAdminAccess = checkAdminAccess(session);
+        setIsAdmin(hasAdminAccess);
+      } catch (error) {
+        console.error("Error checking admin status:", error);
+      }
+    };
+
+    checkAdmin();
+  }, []);
 
   return (
     <StyledDrawer
@@ -82,11 +104,13 @@ export default function LeftNavDrawer() {
       <Divider />
       <Box sx={{ overflow: 'auto', height: '100%', mt: 2 }}>
         <List>
-          {navigationItems.map((item) => (
+          {navigationItems
+            .filter(item => !item.adminOnly || (item.adminOnly && isAdmin))
+            .map((item) => (
             <ListItem key={item.href} disablePadding>
               <NextLink href={item.href} passHref style={{ textDecoration: 'none', width: '100%', color: 'inherit' }}>
                 <StyledListItemButton
-                  selected={pathname === item.href}
+                  selected={pathname === item.href || pathname.startsWith(`${item.href}/`)}
                 >
                   <ListItemIcon sx={{ minWidth: 40, color: 'text.secondary' }}>
                     {item.icon}
@@ -94,7 +118,7 @@ export default function LeftNavDrawer() {
                   <ListItemText 
                     primary={item.label} 
                     primaryTypographyProps={{ 
-                      fontWeight: pathname === item.href ? 600 : 400,
+                      fontWeight: pathname === item.href || pathname.startsWith(`${item.href}/`) ? 600 : 400,
                     }}
                   />
                 </StyledListItemButton>

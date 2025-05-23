@@ -1,0 +1,286 @@
+"use client"
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { 
+  Box, 
+  Typography, 
+  Paper, 
+  Table, 
+  TableHead, 
+  TableBody, 
+  TableRow, 
+  TableCell, 
+  TableContainer,
+  Button,
+  Chip,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  CircularProgress,
+  Alert
+} from "@mui/material";
+import { Demo } from "@/lib/schema";
+import { toast } from "sonner";
+import { auth0 } from "@/lib/auth0";
+import { checkAdminAccess } from "@/lib/admin";
+
+export default function AdminDemosPage() {
+  const router = useRouter();
+  const [demos, setDemos] = useState<Demo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [selectedDemo, setSelectedDemo] = useState<Demo | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [action, setAction] = useState<'approve' | 'request-edits'>('approve');
+  const [adminNotes, setAdminNotes] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Check if user is admin and fetch pending demos
+  useEffect(() => {
+    const checkAdmin = async () => {
+      try {
+        const session = await auth0.getSession();
+        const hasAdminAccess = checkAdminAccess(session);
+        setIsAdmin(hasAdminAccess);
+
+        if (hasAdminAccess) {
+          // Fetch pending demos
+          const response = await fetch('/api/demos?status=pending_approval');
+          
+          if (response.ok) {
+            const data = await response.json();
+            setDemos(data);
+          } else {
+            toast.error("Failed to fetch pending demos");
+          }
+        }
+      } catch (error) {
+        console.error("Error checking admin status:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAdmin();
+  }, []);
+
+  // Handle opening the action dialog
+  const handleOpenDialog = (demo: Demo, actionType: 'approve' | 'request-edits') => {
+    setSelectedDemo(demo);
+    setAction(actionType);
+    setAdminNotes(demo.adminNotes || '');
+    setDialogOpen(true);
+  };
+
+  // Handle dialog close
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    setSelectedDemo(null);
+    setAdminNotes('');
+  };
+
+  // Handle approve or request edits
+  const handleSubmitAction = async () => {
+    if (!selectedDemo) return;
+
+    setIsSubmitting(true);
+    try {
+      const updatedDemo = {
+        ...selectedDemo,
+        adminNotes,
+        status: action === 'approve' ? 'ready' : 'in_progress',
+      };
+
+      const response = await fetch(`/api/demos/${selectedDemo.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedDemo),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update demo');
+      }
+
+      // Remove from list
+      setDemos(demos.filter(demo => demo.id !== selectedDemo.id));
+      
+      toast.success(
+        action === 'approve' 
+          ? "Demo approved successfully" 
+          : "Edits requested successfully"
+      );
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Error updating demo:", error);
+      toast.error("Failed to update demo");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Helper function to format date
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', my: 8 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  // No admin access
+  if (!isAdmin) {
+    return (
+      <Box sx={{ my: 4 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          You do not have admin access to this page.
+        </Alert>
+        <Button 
+          variant="contained" 
+          onClick={() => router.push('/demos')}
+        >
+          Return to Demos
+        </Button>
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ my: 4 }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
+          Admin: Demo Approvals
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Review and approve demos or request edits
+        </Typography>
+      </Box>
+
+      {demos.length === 0 ? (
+        <Alert severity="info">No demos awaiting approval</Alert>
+      ) : (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Title</TableCell>
+                <TableCell>Submitted</TableCell>
+                <TableCell>Type</TableCell>
+                <TableCell>URL</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {demos.map((demo) => (
+                <TableRow key={demo.id} hover>
+                  <TableCell>{demo.title}</TableCell>
+                  <TableCell>{formatDate(demo.createdAt)}</TableCell>
+                  <TableCell>
+                    <Chip 
+                      label={demo.type === 'general' ? 'General' : 'Client Specific'} 
+                      color={demo.type === 'general' ? 'primary' : 'secondary'}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    {demo.url ? (
+                      <Button 
+                        variant="outlined" 
+                        size="small" 
+                        href={demo.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Preview
+                      </Button>
+                    ) : (
+                      <Chip label="No URL" size="small" />
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Button
+                        variant="contained"
+                        color="success"
+                        size="small"
+                        onClick={() => handleOpenDialog(demo, 'approve')}
+                      >
+                        Approve
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="warning"
+                        size="small"
+                        onClick={() => handleOpenDialog(demo, 'request-edits')}
+                      >
+                        Request Edits
+                      </Button>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+
+      {/* Dialog for approve/request edits */}
+      <Dialog open={dialogOpen} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+        <DialogTitle>
+          {action === 'approve' ? 'Approve Demo' : 'Request Edits'}
+        </DialogTitle>
+        <DialogContent>
+          {selectedDemo && (
+            <>
+              <Typography variant="h6" gutterBottom>
+                {selectedDemo.title}
+              </Typography>
+              
+              <TextField
+                label="Admin Notes"
+                multiline
+                rows={4}
+                value={adminNotes}
+                onChange={(e) => setAdminNotes(e.target.value)}
+                fullWidth
+                margin="normal"
+                required={action === 'request-edits'}
+                helperText={action === 'request-edits' ? "Please provide feedback about required changes" : "Optional notes"}
+                error={action === 'request-edits' && !adminNotes.trim()}
+              />
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} disabled={isSubmitting}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleSubmitAction} 
+            variant="contained" 
+            color={action === 'approve' ? 'success' : 'warning'}
+            disabled={isSubmitting || (action === 'request-edits' && !adminNotes.trim())}
+          >
+            {isSubmitting ? (
+              <CircularProgress size={24} />
+            ) : action === 'approve' ? (
+              'Approve Demo'
+            ) : (
+              'Send Edit Request'
+            )}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
+} 

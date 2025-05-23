@@ -5,7 +5,8 @@ export const demoStatusEnum = [
   "in_progress",
   "ready",
   "delivered",
-  "archived"
+  "archived",
+  "pending_approval"
 ] as const
 
 export const demoTypeEnum = [
@@ -33,6 +34,7 @@ export const demoBaseSchema = z.object({
   updatedAt: z.string(), // ISO date string
   vertical: z.string().optional(),
   tags: z.array(z.string()).default([]),
+  adminNotes: z.string().optional(),
 });
 
 // Schema for demo data validation with refinement

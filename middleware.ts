@@ -24,6 +24,7 @@ export async function middleware(request: NextRequest) {
     pathname.match(/\.(jpg|jpeg|png|gif|mp4|webm|svg|js|css)$/i);
 
   // Apply Auth0 authentication for all routes except the skipped ones
+  // Authentication is completely bypassed in development mode
   if (!skipAuthPaths && !isDev) {
     // Only check authentication in production mode
     const session = await auth0.getSession();
@@ -34,6 +35,8 @@ export async function middleware(request: NextRequest) {
       url.searchParams.set('returnTo', request.nextUrl.pathname);
       return NextResponse.redirect(url);
     }
+  } else if (isDev) {
+    console.log('[Middleware] Bypassing authentication in development mode');
   }
   
   // Skip middleware processing for known paths

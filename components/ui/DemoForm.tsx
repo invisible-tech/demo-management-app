@@ -17,7 +17,8 @@ import {
   SelectChangeEvent,
   InputLabel,
   Divider,
-  Paper
+  Paper,
+  Alert
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Demo } from '@/lib/schema';
@@ -85,7 +86,8 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
     assignedTo: isRequest ? 'n/a' : '',
     slug: '',
     vertical: '',
-    useCase: ''
+    useCase: '',
+    adminNotes: ''
   });
 
   // Form validation errors
@@ -121,7 +123,8 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         assignedTo: demo.assignedTo || '',
         slug: demo.slug || '',
         vertical: demo.vertical || '',
-        useCase: demo.useCase || ''
+        useCase: demo.useCase || '',
+        adminNotes: demo.adminNotes || ''
       });
     }
   }, [demo, isEdit]);
@@ -242,9 +245,26 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
     onSubmit(submissionData);
   };
   
+  // Add this code before the return statement to check for admin notes
+  const hasAdminNotes = isEdit && formData.adminNotes;
+
   return (
     <FormPaper elevation={3}>
       <Box component="form" onSubmit={handleSubmit}>
+        {hasAdminNotes && (
+          <Alert 
+            severity="warning" 
+            sx={{ mb: 3 }}
+          >
+            <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+              Admin Feedback - Please Address These Issues:
+            </Typography>
+            <Typography variant="body2">
+              {formData.adminNotes}
+            </Typography>
+          </Alert>
+        )}
+        
         {errors.clientVertical && (
           <Box 
             sx={{ 

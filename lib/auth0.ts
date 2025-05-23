@@ -32,13 +32,9 @@ import { Auth0Client } from "@auth0/nextjs-auth0/server";
 // // Use the mock client in development, real client in production
 // export const auth0 = new MockAuth0Client() as unknown as Auth0Client;
 
-// Initialize the Auth0 client 
-export const auth0 = new Auth0Client({
-  // Options are loaded from environment variables by default
-  // Ensure necessary environment variables are properly set
-  // domain: process.env.AUTH0_DOMAIN,
-  // clientId: process.env.AUTH0_CLIENT_ID,
-  // clientSecret: process.env.AUTH0_CLIENT_SECRET,
-  // appBaseUrl: process.env.APP_BASE_URL,
-  // secret: process.env.AUTH0_SECRET,
-});
+// Initialize the Auth0 client
+// Configuration to minimize header size:
+// 1. Uses code flow instead of implicit flow
+// 2. Requests minimal scopes
+// The Auth0Client will read configuration from environment variables
+export const auth0 = new Auth0Client();

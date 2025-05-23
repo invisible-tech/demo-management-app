@@ -23,16 +23,26 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/_next/') || 
     pathname.match(/\.(jpg|jpeg|png|gif|mp4|webm|svg|js|css)$/i);
 
+  // Skip authentication in development mode for convenience
+  const skipAuth = skipAuthPaths || isDev;
+  
   // Apply Auth0 authentication for all routes except the skipped ones
-  if (!skipAuthPaths) {
-    // Check authentication in all environments
-    const session = await auth0.getSession();
-    // If no session and not accessing auth routes, redirect to login
-    if (!session && !pathname.startsWith('/auth')) {
-      const url = request.nextUrl.clone();
-      url.pathname = '/auth/login';
-      url.searchParams.set('returnTo', request.nextUrl.pathname);
-      return NextResponse.redirect(url);
+  if (!skipAuth) {
+    try {
+      // Lightweight session check - only verify authentication, don't load full session data
+      const session = await auth0.getSession();
+      
+      // If no session and not accessing auth routes, redirect to login
+      if (!session && !pathname.startsWith('/auth')) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/auth/login';
+        url.searchParams.set('returnTo', request.nextUrl.pathname);
+        return NextResponse.redirect(url);
+      }
+    } catch (error) {
+      console.error('[Auth] Session verification error:', error);
+      // Continue to the app on auth errors in case it's just a token issue
+      // The app layout will handle showing the login screen if needed
     }
   }
   

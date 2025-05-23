@@ -2,16 +2,12 @@
 import { useState, useEffect } from 'react';
 import { 
   Box, 
-  Card, 
-  CardContent, 
+
   Typography, 
   TextField, 
   Button, 
   FormControl, 
-  FormLabel, 
-  RadioGroup, 
-  FormControlLabel, 
-  Radio, 
+
   MenuItem, 
   Select,
   SelectChangeEvent,
@@ -102,6 +98,20 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
     }
   }, [formData.slug]);
   
+  // Determine type based on client field
+  useEffect(() => {
+    // If client field has a value, type is 'specific', otherwise 'general'
+    const newType = formData.requestedBy ? 'specific' : 'general';
+    
+    // Only update if the type has changed
+    if (newType !== formData.type) {
+      setFormData(prev => ({
+        ...prev,
+        type: newType
+      }));
+    }
+  }, [formData.requestedBy, formData.type]);
+  
   // If editing, populate form with demo data
   useEffect(() => {
     if (demo && isEdit) {
@@ -170,72 +180,78 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
       }
     }
     
+    // Ensure the type is correctly set based on client field
+    const updatedFormData = {
+      ...formData,
+      type: formData.requestedBy ? 'specific' : 'general'
+    };
+    
     // Prepare data for submission based on form type
     let submissionData = {};
     
     if (isRequest) {
       submissionData = {
-        title: formData.title || 'Demo Request',
-        description: formData.description,
+        title: updatedFormData.title || 'Demo Request',
+        description: updatedFormData.description,
         status: 'requested',
-        type: formData.type,
+        type: updatedFormData.type,
         assignedTo: 'n/a',
         url: '',
         scriptUrl: '',
         recordingUrl: '',
         authDetails: '',
-        dueDate: formData.dueDate || undefined,
-        client: formData.requestedBy || undefined,
+        dueDate: updatedFormData.dueDate || undefined,
+        client: updatedFormData.requestedBy || undefined,
       };
     } else if (isEdit) {
       submissionData = {
-        title: formData.title,
-        description: formData.description,
-        status: formData.status,
-        type: formData.type,
-        assignedTo: formData.assignedTo,
-        url: formData.url,
-        scriptUrl: formData.scriptUrl,
-        recordingUrl: formData.recordingUrl,
-        authDetails: formData.authDetails,
-        dueDate: formData.dueDate || undefined,
-        client: formData.requestedBy,
-        slug: formData.slug,
-        vertical: formData.vertical,
-        useCase: formData.useCase
+        title: updatedFormData.title,
+        description: updatedFormData.description,
+        status: updatedFormData.status,
+        type: updatedFormData.type,
+        assignedTo: updatedFormData.assignedTo,
+        url: updatedFormData.url,
+        scriptUrl: updatedFormData.scriptUrl,
+        recordingUrl: updatedFormData.recordingUrl,
+        authDetails: updatedFormData.authDetails,
+        dueDate: updatedFormData.dueDate || undefined,
+        client: updatedFormData.requestedBy,
+        slug: updatedFormData.slug,
+        vertical: updatedFormData.vertical,
+        useCase: updatedFormData.useCase
       };
     } else if (isRegister) {
       submissionData = {
-        title: formData.title,
-        description: formData.description,
-        status: formData.status,
-        type: formData.type,
-        assignedTo: formData.assignedTo,
-        url: formData.url,
-        scriptUrl: formData.scriptUrl,
-        recordingUrl: formData.recordingUrl,
-        authDetails: formData.authDetails,
-        slug: formData.slug,
-        vertical: formData.vertical,
-        useCase: formData.useCase,
-        client: formData.requestedBy
+        title: updatedFormData.title,
+        description: updatedFormData.description,
+        status: updatedFormData.status,
+        type: updatedFormData.type,
+        assignedTo: updatedFormData.assignedTo,
+        url: updatedFormData.url,
+        scriptUrl: updatedFormData.scriptUrl,
+        recordingUrl: updatedFormData.recordingUrl,
+        authDetails: updatedFormData.authDetails,
+        slug: updatedFormData.slug,
+        vertical: updatedFormData.vertical,
+        useCase: updatedFormData.useCase,
+        client: updatedFormData.requestedBy
       };
     } else {
       // Submit logic
       submissionData = {
-        title: formData.title,
-        description: formData.description,
-        status: formData.status,
-        type: formData.type,
-        assignedTo: formData.assignedTo,
-        url: formData.url,
-        scriptUrl: formData.scriptUrl,
-        recordingUrl: formData.recordingUrl,
-        authDetails: formData.authDetails,
-        slug: formData.slug,
-        vertical: formData.vertical,
-        useCase: formData.useCase,
-        client: formData.requestedBy
+        title: updatedFormData.title,
+        description: updatedFormData.description,
+        status: updatedFormData.status,
+        type: updatedFormData.type,
+        assignedTo: updatedFormData.assignedTo,
+        url: updatedFormData.url,
+        scriptUrl: updatedFormData.scriptUrl,
+        recordingUrl: updatedFormData.recordingUrl,
+        authDetails: updatedFormData.authDetails,
+        slug: updatedFormData.slug,
+        vertical: updatedFormData.vertical,
+        useCase: updatedFormData.useCase,
+        client: updatedFormData.requestedBy
       };
     }
     
@@ -287,20 +303,18 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
             )}
           </Box>
 
-          {isRegister && (
-            <FormControl fullWidth sx={{ mt: 3, mb: 3 }}>
-              <InputLabel id="type-label-register">Demo Type</InputLabel>
-              <Select
-                labelId="type-label-register"
-                name="type"
-                value={formData.type}
-                label="Demo Type"
-                onChange={handleSelectChange}
-              >
-                <MenuItem value="general">General</MenuItem>
-                <MenuItem value="specific">Specific</MenuItem>
-              </Select>
-            </FormControl>
+          {/* Type dropdown is removed - now automatically determined */}
+          
+          {/* Display the current type without allowing edits */}
+          {(isRegister || isEdit) && (
+            <Box sx={{ mt: 3, mb: 3 }}>
+              <Typography variant="body2" color="textSecondary" gutterBottom>
+                Demo Type: <strong>{formData.type === 'specific' ? 'Client Specific' : 'General'}</strong>
+              </Typography>
+              <Typography variant="caption" color="textSecondary">
+                Type is automatically determined based on Client field
+              </Typography>
+            </Box>
           )}
 
           {(isEdit || isRegister || isSubmit) && (
@@ -358,6 +372,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
                   variant="outlined"
                   value={formData.assignedTo}
                   onChange={handleTextChange}
+                  required={isRegister || isEdit}
                 />
                 
                 <TextField
@@ -385,22 +400,6 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
                   helperText="Choose one: Either fill Client OR Vertical field"
                   sx={{ mb: 3 }}
                 />
-              )}
-              
-              {!isRegister && (
-                <FormControl fullWidth sx={{ mb: 3, mt: isRegister ? 3 : 0 }}>
-                  <InputLabel id="type-label">Demo Type</InputLabel>
-                  <Select
-                    labelId="type-label"
-                    name="type"
-                    value={formData.type}
-                    label="Demo Type"
-                    onChange={handleSelectChange}
-                  >
-                    <MenuItem value="general">General</MenuItem>
-                    <MenuItem value="specific">Specific</MenuItem>
-                  </Select>
-                </FormControl>
               )}
               
               {!isRegister && (

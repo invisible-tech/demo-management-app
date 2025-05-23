@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 function HowToDemoContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const tab = searchParams.get('tab') || 'sales';
+  const tab = searchParams.get('tab') || 'getting-started';
   
   const [activeTab, setActiveTab] = useState(tab);
 
@@ -41,11 +41,32 @@ function HowToDemoContent() {
           indicatorColor="primary"
           textColor="primary"
         >
+          <Tab value="getting-started" label="Getting Started" />
           <Tab value="sales" label="For Sales" />
           <Tab value="creators" label="For Demo Creators" />
         </Tabs>
       </Paper>
 
+      <Box sx={{ 
+        width: '100%', 
+        height: 'calc(100vh - 250px)', 
+        minHeight: '600px',
+        border: '1px solid rgba(0, 0, 0, 0.1)',
+        borderRadius: '4px',
+        overflow: 'hidden',
+        display: activeTab === 'getting-started' ? 'block' : 'none'
+      }}>
+        <iframe
+          src="https://docs.google.com/document/d/1p8ikeWtpytZ4CXgpzfIvw5rS9gXJX0P9BHNJEFCPLD0/edit?tab=t.0"
+          title="Getting Started Documentation"
+          width="100%"
+          height="100%"
+          frameBorder="0"
+          style={{ border: 'none' }}
+          allowFullScreen
+        />
+      </Box>
+      
       <Box sx={{ 
         width: '100%', 
         height: 'calc(100vh - 250px)', 

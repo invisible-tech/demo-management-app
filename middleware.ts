@@ -12,6 +12,10 @@ export async function middleware(request: NextRequest) {
 
   // Always allow auth routes to pass through to Auth0 middleware
   if (pathname.startsWith('/auth')) {
+    // In development mode, skip auth completely 
+    if (isDev) {
+      return NextResponse.next();
+    }
     return await auth0.middleware(request);
   }
   
@@ -25,7 +29,7 @@ export async function middleware(request: NextRequest) {
 
   // Apply Auth0 authentication for all routes except the skipped ones
   if (!skipAuthPaths && !isDev) {
-    // Only check authentication in production mode
+    // Only check authentication in non-development mode
     const session = await auth0.getSession();
     // If no session and not accessing auth routes, redirect to login
     if (!session && !pathname.startsWith('/auth')) {

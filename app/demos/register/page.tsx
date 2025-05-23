@@ -14,7 +14,7 @@ const registerDemoSchema = z.object({
   url: z.string().url("Please enter a valid URL").optional(),
   slug: z.string().min(1, "Slug is required"),
   authDetails: z.string().optional(),
-  assignedTo: z.string().optional(),
+  assignedTo: z.string().min(1, "Owner is required"),
 })
 
 type RegisterDemoFormData = z.infer<typeof registerDemoSchema>

@@ -20,6 +20,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Check if we're in development mode
+  const isDev = process.env.NODE_ENV === 'development';
+  
+  // In development, we'll use the mock session
+  // In production, we'll check for a real session
   const session = await auth0.getSession();
 
   return (
@@ -27,8 +32,8 @@ export default async function RootLayout({
       <body className={inter.className} style={{ backgroundColor: '#f5f5f5' }}>
         <ThemeRegistry>
           <CssBaseline />
-          {session ? (
-            // Show full app layout when authenticated
+          {session || isDev ? (
+            // Show full app layout when authenticated or in development
             <Box sx={{ display: 'flex', minHeight: '100vh' }}>
               <AppBar />
               <LeftNavDrawer />
@@ -48,7 +53,7 @@ export default async function RootLayout({
               </Box>
             </Box>
           ) : (
-            // Show login screen when not authenticated
+            // Show login screen when not authenticated (production only)
             <Container 
               maxWidth="sm" 
               sx={{ 

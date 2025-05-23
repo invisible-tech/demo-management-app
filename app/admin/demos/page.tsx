@@ -20,51 +20,51 @@ import {
   DialogContent,
   DialogActions,
   CircularProgress,
-  Alert
+  Alert,
+  Tab,
+  Tabs
 } from "@mui/material";
 import { Demo } from "@/lib/schema";
 import { toast } from "sonner";
 import { auth0 } from "@/lib/auth0";
 import { checkAdminAccess } from "@/lib/admin";
+import DemoTable from "@/components/ui/DemoTable";
+import Link from "next/link";
 
 export default function AdminDemosPage() {
   const router = useRouter();
-  const [demos, setDemos] = useState<Demo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [demos, setDemos] = useState<Demo[]>([]);
+  const [activeTab, setActiveTab] = useState("pending");
   const [selectedDemo, setSelectedDemo] = useState<Demo | null>(null);
+  const [adminNotes, setAdminNotes] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [action, setAction] = useState<'approve' | 'request-edits'>('approve');
-  const [adminNotes, setAdminNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Check if user is admin and fetch pending demos
+  // Load demos list
   useEffect(() => {
-    const checkAdmin = async () => {
+    const loadDemos = async () => {
       try {
-        const session = await auth0.getSession();
-        const hasAdminAccess = checkAdminAccess(session);
-        setIsAdmin(hasAdminAccess);
-
-        if (hasAdminAccess) {
-          // Fetch pending demos
-          const response = await fetch('/api/demos?status=pending_approval');
-          
-          if (response.ok) {
-            const data = await response.json();
-            setDemos(data);
-          } else {
-            toast.error("Failed to fetch pending demos");
-          }
+        // Auth0 is fully disabled - always grant admin access
+        console.log('[Admin] Auth0 is fully disabled - granting admin access');
+        
+        // Fetch all demos
+        const response = await fetch('/api/demos');
+        
+        if (response.ok) {
+          const data = await response.json();
+          setDemos(data);
         }
       } catch (error) {
-        console.error("Error checking admin status:", error);
+        console.error("Error loading demos:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    checkAdmin();
+    loadDemos();
   }, []);
 
   // Handle opening the action dialog
@@ -134,23 +134,6 @@ export default function AdminDemosPage() {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', my: 8 }}>
         <CircularProgress />
-      </Box>
-    );
-  }
-
-  // No admin access
-  if (!isAdmin) {
-    return (
-      <Box sx={{ my: 4 }}>
-        <Alert severity="error" sx={{ mb: 2 }}>
-          You do not have admin access to this page.
-        </Alert>
-        <Button 
-          variant="contained" 
-          onClick={() => router.push('/demos')}
-        >
-          Return to Demos
-        </Button>
       </Box>
     );
   }

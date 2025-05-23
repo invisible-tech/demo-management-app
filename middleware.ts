@@ -7,36 +7,12 @@ export async function middleware(request: NextRequest) {
   // Get the pathname from the URL
   const pathname = request.nextUrl.pathname;
 
-  // Check if we're in development mode
-  const isDev = process.env.NODE_ENV === 'development';
+  // Auth0 is fully disabled - log for debugging but always pass through
+  console.log(`[Middleware] Auth0 fully disabled - allowing access to ${pathname}`);
 
-  // Always allow auth routes to pass through to Auth0 middleware
+  // Always allow auth routes to pass through without any real Auth0 middleware
   if (pathname.startsWith('/auth')) {
-    return await auth0.middleware(request);
-  }
-  
-  // Skip authentication for static files and API routes
-  const skipAuthPaths = 
-    pathname === '/favicon.ico' ||
-    pathname === '/robots.txt' ||
-    pathname === '/sitemap.xml' ||
-    pathname.startsWith('/_next/') || 
-    pathname.match(/\.(jpg|jpeg|png|gif|mp4|webm|svg|js|css)$/i);
-
-  // Apply Auth0 authentication for all routes except the skipped ones
-  // Authentication is completely bypassed in development mode
-  if (!skipAuthPaths && !isDev) {
-    // Only check authentication in production mode
-    const session = await auth0.getSession();
-    // If no session and not accessing auth routes, redirect to login
-    if (!session && !pathname.startsWith('/auth')) {
-      const url = request.nextUrl.clone();
-      url.pathname = '/auth/login';
-      url.searchParams.set('returnTo', request.nextUrl.pathname);
-      return NextResponse.redirect(url);
-    }
-  } else if (isDev) {
-    console.log('[Middleware] Bypassing authentication in development mode');
+    return NextResponse.next();
   }
   
   // Skip middleware processing for known paths

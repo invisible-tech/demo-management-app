@@ -6,15 +6,7 @@ import { z } from "zod"
 import { toast } from "sonner"
 import { Typography, Box } from '@mui/material';
 import DemoForm from "@/components/ui/DemoForm"
-import Mailgun from "mailgun.js"
-import formData from "form-data"
-import * as dotenv from "dotenv"
-dotenv.config()
-const mg = new Mailgun(formData)
-const mailgun = mg.client({
-  username: "Invisible Technologies",
-  key: process.env.MG_REST_API_TOKEN || "",
-})
+
 // Form schema
 const registerDemoSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -52,8 +44,6 @@ export default function RegisterDemoPage() {
       
       toast.success("Demo registered successfully and pending admin approval")
       router.push("/demos")
-      toast.success("Demo registered successfully and pending admin approval")
-      router.push("/demos")
     } catch (error) {
       console.error("Error registering demo:", error)
       toast.error("Failed to register demo. Please try again.")
@@ -69,7 +59,6 @@ export default function RegisterDemoPage() {
           Register a Demo
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Complete this form to register a new demo. All demos require admin approval before appearing in the main list.
           Complete this form to register a new demo. All demos require admin approval before appearing in the main list.
         </Typography>
       </Box>

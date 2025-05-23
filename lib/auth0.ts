@@ -1,23 +1,20 @@
 import { Auth0Client } from "@auth0/nextjs-auth0/server";
 
-// Check if we're in development mode
-const isDev = process.env.NODE_ENV === 'development';
-
-// Create a mock Auth0 client for development that bypasses authentication
-class MockAuth0Client {
+// Fully disabled mock Auth0 client
+class DisabledAuth0Client {
   // Mock middleware function that always passes through
   async middleware(req: any) {
-    console.log('[Auth0] Using mock Auth0 client in development mode');
+    console.log('[Auth0] Auth0 is fully disabled');
     return new Response(null);
   }
   
-  // Mock getSession that returns a fake user session
+  // Mock getSession that always returns an admin user session
   async getSession() {
-    console.log('[Auth0] Returning mock user session in development mode');
+    console.log('[Auth0] Returning mock admin session (Auth0 fully disabled)');
     return {
       user: {
         sub: 'mock-user-id',
-        email: 'dev@example.com', // This email matches our admin list
+        email: 'dev@example.com', // Admin email
         name: 'Development User',
         email_verified: true,
         picture: 'https://via.placeholder.com/150',
@@ -29,14 +26,5 @@ class MockAuth0Client {
   }
 }
 
-// Use the mock client in development, real client in production
-export const auth0 = isDev 
-  ? new MockAuth0Client() as unknown as Auth0Client
-  : new Auth0Client({
-      // Options are loaded from environment variables by default
-      // domain: process.env.AUTH0_DOMAIN || '',
-      // clientId: process.env.AUTH0_CLIENT_ID || '',
-      // clientSecret: process.env.AUTH0_CLIENT_SECRET || '',
-      // appBaseUrl: process.env.APP_BASE_URL || '',
-      // secret: process.env.AUTH0_SECRET || '',
-    });
+// Always use the disabled client regardless of environment
+export const auth0 = new DisabledAuth0Client() as unknown as Auth0Client;

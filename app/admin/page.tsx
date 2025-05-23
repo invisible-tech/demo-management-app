@@ -13,41 +13,35 @@ import {
   CircularProgress
 } from "@mui/material";
 import Link from "next/link";
-import { auth0 } from "@/lib/auth0";
-import { checkAdminAccess } from "@/lib/admin";
 import { useRouter } from "next/navigation";
 
 export default function AdminPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [pendingDemosCount, setPendingDemosCount] = useState(0);
 
-  // Check if user is admin
+  // Load admin dashboard data
   useEffect(() => {
-    const checkAdmin = async () => {
+    const loadData = async () => {
       try {
-        const session = await auth0.getSession();
-        const hasAdminAccess = checkAdminAccess(session);
-        setIsAdmin(hasAdminAccess);
-
-        if (hasAdminAccess) {
-          // Fetch count of pending demos
-          const response = await fetch('/api/demos?status=pending_approval');
-          
-          if (response.ok) {
-            const data = await response.json();
-            setPendingDemosCount(data.length);
-          }
+        // Auth0 is fully disabled - always grant admin access
+        console.log('[Admin] Auth0 is fully disabled - granting admin access');
+  
+        // Fetch count of pending demos
+        const response = await fetch('/api/demos?status=pending_approval');
+        
+        if (response.ok) {
+          const data = await response.json();
+          setPendingDemosCount(data.length);
         }
       } catch (error) {
-        console.error("Error checking admin status:", error);
+        console.error("Error loading admin data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    checkAdmin();
+    loadData();
   }, []);
 
   // Loading state
@@ -55,20 +49,6 @@ export default function AdminPage() {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', my: 8 }}>
         <CircularProgress />
-      </Box>
-    );
-  }
-
-  // No admin access
-  if (!isAdmin) {
-    return (
-      <Box sx={{ my: 4 }}>
-        <Alert severity="error" sx={{ mb: 2 }}>
-          You do not have admin access to this page.
-        </Alert>
-        <Link href="/demos" passHref>
-          Return to Demos
-        </Link>
       </Box>
     );
   }

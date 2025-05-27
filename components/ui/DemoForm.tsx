@@ -490,7 +490,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
               
               <TextField
                 name="recordingUrl"
-                label="Recording URL"
+                label="Video Walkthrough"
                 fullWidth
                 sx={{ mb: 3 }}
                 value={formData.recordingUrl}

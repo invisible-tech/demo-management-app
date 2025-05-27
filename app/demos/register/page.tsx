@@ -85,7 +85,11 @@ export default function RegisterDemoPage() {
                 <li><strong>Title:</strong> ${demoData.title}</li>
                 <li><strong>Registered by:</strong> ${demoData.createdBy}</li>
                 <li><strong>Description:</strong> ${demoData.description || 'N/A'}</li>
-              </ul>
+                <li><strong>Real URL:</strong> ${demoData.url || 'MISSING'}</li>
+                <li><strong>Demo URL:</strong> https://demos.inv.tech/${demoData.slug || 'MISSING'}</li>
+                <li><strong>Script URL:</strong> ${demoData.scriptUrl || 'MISSING'}</li>
+                <li><strong>Video Walkthrough:</strong> ${demoData.recordingUrl || 'MISSING'}</li>
+                </ul>
               <p>Please review and approve this demo through the admin interface.</p>
             `
           })

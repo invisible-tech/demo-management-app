@@ -75,7 +75,7 @@ export default function RegisterDemoPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            to: ["Vince Guan <vince.guan@invisible.email>"], // Admin's email address
+            to: ["Vince Guan <vince.guan@invisible.email>", "Nick Agresti <nick.agresti@invisible.email>"], // Admin's email address
             subject: "New Demo Registration Pending Approval",
             text: `A new demo "${demoData.title}" has been registered by ${demoData.createdBy} and is pending approval.`,
             html: `

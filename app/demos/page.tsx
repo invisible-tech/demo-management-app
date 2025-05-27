@@ -15,6 +15,7 @@ export default async function DemosPage({
   const params = await searchParams
   // Default status to empty string to show all demos
   const status = typeof params.status === "string" ? params.status : ""
+  const template = typeof params.template === "string" ? params.template : undefined
   const vertical = typeof params.vertical === "string" ? params.vertical : undefined
   const assignedTo = typeof params.assignedTo === "string" ? params.assignedTo : undefined
   const search = typeof params.search === "string" ? params.search : undefined
@@ -49,6 +50,7 @@ export default async function DemosPage({
       <Suspense fallback={<Box sx={{ textAlign: 'center', py: 4 }}>Loading demos...</Box>}>
         <DemoListWrapper 
           status={status}
+          template={template}
           vertical={vertical}
           assignedTo={assignedTo}
           search={search}
@@ -60,11 +62,13 @@ export default async function DemosPage({
 
 async function DemoListWrapper({
   status,
+  template,
   vertical,
   assignedTo,
   search,
 }: {
   status?: string
+  template?: string
   vertical?: string
   assignedTo?: string
   search?: string
@@ -75,6 +79,7 @@ async function DemoListWrapper({
   // Apply filters - this is a fallback if the API filters don't work
   const filteredDemos = allDemos.filter((demo) => {
     if (status && demo.status !== status) return false
+    if (template && demo.template !== template) return false
     if (vertical && demo.vertical !== vertical) return false
     if (assignedTo && demo.assignedTo !== assignedTo) return false
     

@@ -8,6 +8,7 @@ export async function GET(request: NextRequest) {
     // Get filter parameters from query string
     const url = new URL(request.url)
     const status = url.searchParams.get("status") || undefined
+    const template = url.searchParams.get("template") || undefined
     const vertical = url.searchParams.get("vertical") || undefined
     const assignedTo = url.searchParams.get("assignedTo") || undefined
     const search = url.searchParams.get("search") || undefined
@@ -15,6 +16,7 @@ export async function GET(request: NextRequest) {
     // Validate filters
     const filterResult = filterDemoSchema.safeParse({
       status,
+      template,
       vertical,
       assignedTo,
       search,
@@ -34,6 +36,11 @@ export async function GET(request: NextRequest) {
     const filteredDemos = allDemos.filter((demo) => {
       // Status filter
       if (status && demo.status !== status) {
+        return false
+      }
+
+      // Template filter
+      if (template && demo.template !== template) {
         return false
       }
 

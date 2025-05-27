@@ -95,6 +95,7 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
   const [filters, setFilters] = useState({
     status: '',
     type: '',
+    template: '',
     vertical: '',
     client: '',
     search: '',
@@ -130,6 +131,9 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
     
     // Type filter
     if (filters.type && demo.type !== filters.type) return false;
+    
+    // Template filter
+    if (filters.template && demo.template !== filters.template) return false;
     
     // Vertical filter
     if (filters.vertical && demo.vertical !== filters.vertical) return false;
@@ -231,6 +235,23 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
           </Select>
         </FormControl>
         
+        <FormControl 
+          size="small" 
+          className={styles.filterSelect}
+          sx={{ minWidth: '150px' }}
+        >
+          <InputLabel>Template</InputLabel>
+          <Select
+            value={filters.template}
+            label="Template"
+            onChange={handleFilterChange('template') as any}
+          >
+            <MenuItem value="">All Templates</MenuItem>
+            <MenuItem value="template1">Template 1</MenuItem>
+            <MenuItem value="template2">Template 2</MenuItem>
+          </Select>
+        </FormControl>
+        
         {showVerticalColumn && (
           <FormControl 
             size="small" 
@@ -305,17 +326,22 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
               paginatedDemos.map((demo) => (
                 <TableRow key={demo.id} hover>
                   <TableCell>
-                    {demo.slug ? (
-                      <Link href={`/${demo.slug}`} passHref style={{ textDecoration: 'none' }}>
-                        <MuiLink color="primary" underline="hover">
+                    <Box>
+                      {demo.slug ? (
+                        <Link href={`/${demo.slug}`} passHref style={{ textDecoration: 'none' }}>
+                          <MuiLink color="primary" underline="hover">
+                            {demo.title || 'Untitled Demo'}
+                          </MuiLink>
+                        </Link>
+                      ) : (
+                        <Typography color="textPrimary">
                           {demo.title || 'Untitled Demo'}
-                        </MuiLink>
-                      </Link>
-                    ) : (
-                      <Typography color="textPrimary">
-                        {demo.title || 'Untitled Demo'}
+                        </Typography>
+                      )}
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.75rem' }}>
+                        {demo.template === 'template2' ? 'Template 2' : 'Template 1'}
                       </Typography>
-                    )}
+                    </Box>
                   </TableCell>
                   {tabType === 'general' && showVerticalColumn && (
                     <TableCell>{demo.vertical || '-'}</TableCell>

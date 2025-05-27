@@ -7,24 +7,18 @@ export async function middleware(request: NextRequest) {
   // Get the pathname from the URL
   const pathname = request.nextUrl.pathname;
 
-  // Check if we're in development mode
-  const isDev = process.env.NODE_ENV === 'development';
-
   // Always allow auth routes to pass through to Auth0 middleware
   if (pathname.startsWith('/auth')) {
     return await auth0.middleware(request);
   }
   
   // Skip authentication for static files and API routes
-  const skipAuthPaths = 
+  const skipAuth = 
     pathname === '/favicon.ico' ||
     pathname === '/robots.txt' ||
     pathname === '/sitemap.xml' ||
     pathname.startsWith('/_next/') || 
     pathname.match(/\.(jpg|jpeg|png|gif|mp4|webm|svg|js|css)$/i);
-
-  // Skip authentication in development mode for convenience
-  const skipAuth = skipAuthPaths || isDev;
   
   // Apply Auth0 authentication for all routes except the skipped ones
   if (!skipAuth) {

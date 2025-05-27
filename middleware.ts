@@ -7,9 +7,9 @@ export async function middleware(request: NextRequest) {
   // Get the pathname from the URL
   const pathname = request.nextUrl.pathname;
 
-  // Always allow auth routes to pass through to Auth0 middleware
-  if (pathname.startsWith('/auth')) {
-    return await auth0.middleware(request);
+  // Always allow auth routes to pass through without authentication
+  if (pathname.startsWith('/auth') || pathname.startsWith('/api/auth')) {
+    return NextResponse.next();
   }
   
   // Skip authentication for static files and API routes

@@ -106,49 +106,27 @@ export default function AdminDemosPage() {
         throw new Error('Failed to update demo');
       }
       
-      // Send email notification based on action
-      try {
-        // Determine the appropriate subject and content based on the action
-        const subject = action === 'approve' 
-          ? `Demo Approved: ${selectedDemo.title}`
-          : `Updates Requested: ${selectedDemo.title}`;
-        
-        const htmlContent = action === 'approve'
-          ? `
-            <h2>Your Demo Has Been Approved!</h2>
-            <p>Great news! Your demo "${selectedDemo.title}" has been approved and is now available in the demos library.</p>
-            <p>You can view your demo at: <a href="${window.location.origin}/${selectedDemo.slug}">${window.location.origin}/${selectedDemo.slug}</a></p>
-          `
-          : `
-            <h2>Updates Requested for Your Demo</h2>
-            <p>The admin team has reviewed your demo "${selectedDemo.title}" and is requesting some changes:</p>
-            <p><strong>Admin Notes:</strong></p>
-            <div style="padding: 10px; background-color: #f5f5f5; border-left: 4px solid #0070f3;">
-              ${adminNotes}
-            </div>
-            <p>Please make the requested changes and resubmit your demo.</p>
-          `;
-        
-        // Get the creator's email from the demo
-        const recipientEmail = selectedDemo.createdBy || "demo-creator@example.com";
-        
-        await fetch("/api/email", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            to: recipientEmail,
-            subject: subject,
-            text: action === 'approve' 
-              ? `Your demo "${selectedDemo.title}" has been approved.`
-              : `The admin team has requested changes to your demo "${selectedDemo.title}": ${adminNotes}`,
-            html: htmlContent
-          })
-        });
-        
-        console.log(`Email notification sent to ${recipientEmail}`);
-      } catch (emailError) {
-        console.error("Failed to send email notification:", emailError);
-        // Continue with success flow even if email fails
+      
+      // Send Slack notification for edit requests
+      if (action === 'request-edits') {
+        try {
+          await fetch("/api/slack", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              demoTitle: selectedDemo.title,
+              adminNotes: adminNotes,
+              demoUrl: selectedDemo.url,
+              assignedTo: selectedDemo.assignedTo,
+              demoType: selectedDemo.type
+            })
+          });
+          
+          console.log(`Slack notification sent for demo: ${selectedDemo.title}`);
+        } catch (slackError) {
+          console.error("Failed to send Slack notification:", slackError);
+          // Continue with success flow even if Slack notification fails
+        }
       }
 
       // Remove from list

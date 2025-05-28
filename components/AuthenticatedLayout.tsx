@@ -70,7 +70,7 @@ export default function AuthenticatedLayout({ children }: { children: ReactNode 
           Please sign in to continue
         </Typography>
         <Button 
-          href="/api/auth/login" 
+          href="/auth/login" 
           variant="contained" 
           size="large"
           sx={{ mt: 2 }}

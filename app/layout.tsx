@@ -3,18 +3,18 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import ThemeRegistry from "../theme/ThemeRegistry";
-import { Box, CssBaseline, Container } from "@mui/material";
-import AuthenticatedLayout from '../components/AuthenticatedLayout';
-import { auth0 } from "@/lib/auth0";
+import AppBar from "../components/AppBar";
+import LeftNavDrawer from "../components/ui/LeftNavDrawer";
+import { Box, CssBaseline } from "@mui/material";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Demos | Invisible",
   description: "Access, request, & manage Invisible Demos",
 };
-const session  = await auth0.getSession();
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -22,17 +22,28 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className} style={{ backgroundColor: '#f5f5f5' }}>
-        {session ? (
-          <ThemeRegistry>
-            <CssBaseline />
-            <Container maxWidth={false} disableGutters sx={{ p: 0 }}>
-              <AuthenticatedLayout>
-                {children}
-              </AuthenticatedLayout>
-            </Container>
-            <Toaster position="top-right" />
-          </ThemeRegistry>
-        ) : null}
+        <ThemeRegistry>
+          <CssBaseline />
+          <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+            <AppBar />
+            <LeftNavDrawer />
+            <Box
+              component="main"
+              sx={{ 
+                flexGrow: 1,
+                p: { xs: 2, sm: 2 },
+                mt: '64px',
+                ml: '100px',
+                width: { xs: 'calc(100% - 100px)' },
+                maxWidth: { sm: 'calc(100% - 100px)' }, 
+                overflow: 'auto'
+              }}
+            >
+              {children}
+            </Box>
+          </Box>
+          <Toaster position="top-right" />
+        </ThemeRegistry>
       </body>
     </html>
   );

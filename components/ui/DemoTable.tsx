@@ -247,8 +247,8 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
             onChange={handleFilterChange('template') as any}
           >
             <MenuItem value="">All Templates</MenuItem>
-            <MenuItem value="template1">Template 1</MenuItem>
-            <MenuItem value="template2">Template 2</MenuItem>
+            <MenuItem value="old_template">Old Template</MenuItem>
+            <MenuItem value="new_template">New Template</MenuItem>
           </Select>
         </FormControl>
         
@@ -339,7 +339,7 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
                         </Typography>
                       )}
                       <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.75rem' }}>
-                        {demo.template === 'template2' ? 'Template 2' : 'Template 1'}
+                        {demo.template === 'new_template' ? 'New Template' : 'Old Template'}
                       </Typography>
                     </Box>
                   </TableCell>

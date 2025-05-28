@@ -14,8 +14,8 @@ export const demoTypeEnum = [
 ] as const
 
 export const demoTemplateEnum = [
-  "template1",
-  "template2"
+  "old_template",
+  "new_template"
 ] as const
 
 // Base schema without refinement
@@ -26,7 +26,7 @@ export const demoBaseSchema = z.object({
   description: z.string().optional(),
   status: z.enum(demoStatusEnum).default("requested"),
   type: z.enum(demoTypeEnum).default("general"),
-  template: z.enum(demoTemplateEnum).default("template1"),
+  template: z.enum(demoTemplateEnum).default("old_template"),
   client: z.string().optional(),
   assignedTo: z.string().optional(),
   useCase: z.string().optional(),

@@ -125,7 +125,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         stakeholders: '',
         status: demo.status || 'requested',
         type: demo.type || 'general',
-        template: demo.template || 'template1',
+        template: demo.template || 'old_template',
         url: demo.url || '',
         scriptUrl: demo.scriptUrl || '',
         recordingUrl: demo.recordingUrl || '',

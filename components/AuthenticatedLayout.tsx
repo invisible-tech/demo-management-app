@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect, ReactNode } from 'react';
-import { Box, Button, Container, Typography } from '@mui/material';
+import { ReactNode } from 'react';
+import { Box } from '@mui/material';
 import AppBar from './AppBar';
 import LeftNavDrawer from './ui/LeftNavDrawer';
 
 // This is a client component that handles auth status and renders appropriate layout
 export default function AuthenticatedLayout({ children }: { children: ReactNode }) {
-  // Authentication is disabled - always render the main layout
+  // Authentication is disabled for development - always render the main layout
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
       <AppBar />

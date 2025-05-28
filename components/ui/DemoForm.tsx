@@ -74,7 +74,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
     stakeholders: '',
     status: isRequest ? 'requested' : 'ready',
     type: 'general', // Default type
-    template: 'template1', // Default template
+    template: 'Old Template', // Default template
     url: '',
     scriptUrl: '',
     recordingUrl: '',
@@ -333,8 +333,8 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
                 label="Template"
                 onChange={handleSelectChange}
               >
-                <MenuItem value="template1">Template 1</MenuItem>
-                <MenuItem value="template2">Template 2</MenuItem>
+                <MenuItem value="Old Template">Old Template</MenuItem>
+                <MenuItem value="New Template">New Template</MenuItem>
               </Select>
             </FormControl>
           )}

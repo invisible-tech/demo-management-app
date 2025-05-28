@@ -79,6 +79,7 @@ function cleanDemoData(data, id) {
     description: data.description || '',
     type: data.type || 'general',
     status: 'in_progress', // Will be recomputed based on resources
+    template: data.template || 'old_template', // Default template
     createdAt: data.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     slug: data.slug || '',

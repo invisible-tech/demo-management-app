@@ -66,6 +66,7 @@ const sampleDemos = [
     description: "Platform for training and deploying ML models",
     status: "in_progress",
     vertical: "Machine Learning",
+    template: "old_template",
     url: "https://ml-platform.example.com",
     scriptUrl: "", // Missing script
     recordingUrl: "", // Missing recording
@@ -80,6 +81,7 @@ const sampleDemos = [
     description: "Real-time security monitoring and threat detection",
     status: "in_progress",
     vertical: "Cybersecurity",
+    template: "old_template",
     url: "", // Missing URL
     scriptUrl: "https://docs.example.com/scripts/security-monitoring",
     recordingUrl: "", // Missing recording
@@ -96,6 +98,7 @@ const sampleDemos = [
     description: "Demo of our ERP integration for Acme Corporation",
     status: "ready",
     client: "Acme Corporation",
+    template: "old_template",
     url: "https://acme-erp-demo.example.com",
     scriptUrl: "https://docs.example.com/scripts/acme-erp",
     recordingUrl: "https://recording.example.com/acme-erp",
@@ -110,6 +113,7 @@ const sampleDemos = [
     description: "Healthcare analytics dashboard for Globex Medical",
     status: "ready",
     client: "Globex Medical",
+    template: "old_template",
     url: "https://globex-healthcare.example.com",
     scriptUrl: "https://docs.example.com/scripts/globex-healthcare",
     recordingUrl: "https://recording.example.com/globex-healthcare",
@@ -126,6 +130,7 @@ const sampleDemos = [
     description: "Cloud migration solution for TechDynamics",
     status: "in_progress",
     client: "TechDynamics Inc.",
+    template: "old_template",
     url: "https://techdynamics-cloud.example.com",
     scriptUrl: "https://docs.example.com/scripts/techdynamics-cloud",
     recordingUrl: "", // Missing recording
@@ -140,6 +145,7 @@ const sampleDemos = [
     description: "New booking system demo for Oceanic Airlines",
     status: "in_progress",
     client: "Oceanic Airlines",
+    template: "old_template",
     url: "", // Missing URL
     scriptUrl: "", // Missing script
     recordingUrl: "", // Missing recording

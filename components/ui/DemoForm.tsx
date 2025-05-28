@@ -74,7 +74,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
     stakeholders: '',
     status: isRequest ? 'requested' : 'ready',
     type: 'general', // Default type
-    template: 'Old Template', // Default template
+    template: 'old_template', // Default template
     url: '',
     scriptUrl: '',
     recordingUrl: '',
@@ -308,6 +308,22 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
             )}
           </Box>
 
+          {/* Template selector */}
+          <FormControl fullWidth sx={{ mt: 3 }}>
+            <InputLabel id="template-label">Template</InputLabel>
+            <Select
+              labelId="template-label"
+              name="template"
+              value={formData.template}
+              label="Template"
+              onChange={handleSelectChange}
+              required
+            >
+              <MenuItem value="old_template">Old Template</MenuItem>
+              <MenuItem value="new_template">New Template</MenuItem>
+            </Select>
+          </FormControl>
+
           {/* Type dropdown is removed - now automatically determined */}
           
           {/* Display the current type without allowing edits */}
@@ -320,23 +336,6 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
                 Type is automatically determined based on Client field
               </Typography>
             </Box>
-          )}
-
-          {/* Template selector for register and edit forms */}
-          {(isRegister || isEdit) && (
-            <FormControl fullWidth sx={{ mt: 3 }}>
-              <InputLabel id="template-label">Template</InputLabel>
-              <Select
-                labelId="template-label"
-                name="template"
-                value={formData.template}
-                label="Template"
-                onChange={handleSelectChange}
-              >
-                <MenuItem value="Old Template">Old Template</MenuItem>
-                <MenuItem value="New Template">New Template</MenuItem>
-              </Select>
-            </FormControl>
           )}
 
           {(isEdit || isRegister || isSubmit) && (

@@ -126,6 +126,12 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
 
   // Apply filters
   const filteredDemos = demos.filter((demo) => {
+    // Debug logging for template filtering
+    if (filters.template) {
+      console.log('Filtering by template:', filters.template);
+      console.log('Demo template value:', demo.template);
+    }
+    
     // Status filter
     if (filters.status && demo.status !== filters.status) return false;
     
@@ -146,8 +152,10 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
       const searchLower = filters.search.toLowerCase();
       const titleMatch = demo.title?.toLowerCase().includes(searchLower);
       const descMatch = demo.description?.toLowerCase().includes(searchLower);
+      const clientMatch = demo.client?.toLowerCase().includes(searchLower);
+      const useCaseMatch = demo.useCase?.toLowerCase().includes(searchLower);
       
-      if (!(titleMatch || descMatch)) {
+      if (!(titleMatch || descMatch || clientMatch || useCaseMatch)) {
         return false;
       }
     }

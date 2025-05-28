@@ -15,10 +15,14 @@ export async function GET() {
     // Return minimal user info to reduce payload size
     return NextResponse.json({
       authenticated: true,
-      email: session.user?.email || null
+      user: {
+        name: session.user.name,
+        email: session.user.email,
+        picture: session.user.picture
+      }
     });
   } catch (error) {
-    console.error('[Auth API] Error checking auth status:', error);
-    return new NextResponse(null, { status: 500 });
+    console.error('Auth check failed:', error);
+    return new NextResponse(null, { status: 401 });
   }
 } 

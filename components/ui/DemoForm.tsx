@@ -74,6 +74,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
     stakeholders: '',
     status: isRequest ? 'requested' : 'ready',
     type: 'general', // Default type
+    template: 'Old Template', // Default template
     url: '',
     scriptUrl: '',
     recordingUrl: '',
@@ -124,6 +125,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         stakeholders: '',
         status: demo.status || 'requested',
         type: demo.type || 'general',
+        template: demo.template || 'template1',
         url: demo.url || '',
         scriptUrl: demo.scriptUrl || '',
         recordingUrl: demo.recordingUrl || '',
@@ -209,6 +211,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         description: updatedFormData.description,
         status: updatedFormData.status,
         type: updatedFormData.type,
+        template: updatedFormData.template,
         assignedTo: updatedFormData.assignedTo,
         url: updatedFormData.url,
         scriptUrl: updatedFormData.scriptUrl,
@@ -226,6 +229,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         description: updatedFormData.description,
         status: updatedFormData.status,
         type: updatedFormData.type,
+        template: updatedFormData.template,
         assignedTo: updatedFormData.assignedTo,
         url: updatedFormData.url,
         scriptUrl: updatedFormData.scriptUrl,
@@ -243,6 +247,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         description: updatedFormData.description,
         status: updatedFormData.status,
         type: updatedFormData.type,
+        template: updatedFormData.template,
         assignedTo: updatedFormData.assignedTo,
         url: updatedFormData.url,
         scriptUrl: updatedFormData.scriptUrl,
@@ -315,6 +320,23 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
                 Type is automatically determined based on Client field
               </Typography>
             </Box>
+          )}
+
+          {/* Template selector for register and edit forms */}
+          {(isRegister || isEdit) && (
+            <FormControl fullWidth sx={{ mt: 3 }}>
+              <InputLabel id="template-label">Template</InputLabel>
+              <Select
+                labelId="template-label"
+                name="template"
+                value={formData.template}
+                label="Template"
+                onChange={handleSelectChange}
+              >
+                <MenuItem value="Old Template">Old Template</MenuItem>
+                <MenuItem value="New Template">New Template</MenuItem>
+              </Select>
+            </FormControl>
           )}
 
           {(isEdit || isRegister || isSubmit) && (

@@ -204,6 +204,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         authDetails: '',
         dueDate: updatedFormData.dueDate || undefined,
         client: updatedFormData.requestedBy || undefined,
+        vertical: updatedFormData.vertical || undefined,
       };
     } else if (isEdit) {
       submissionData = {
@@ -372,6 +373,27 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         <FormSection>
           {isRequest ? (
             <>
+              <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, mb: 3 }}>
+                <TextField
+                  name="requestedBy"
+                  label="Client"
+                  fullWidth
+                  variant="outlined"
+                  value={formData.requestedBy}
+                  onChange={handleTextChange}
+                  required
+                />
+                
+                <TextField
+                  name="vertical"
+                  label="Vertical"
+                  fullWidth
+                  variant="outlined"
+                  value={formData.vertical}
+                  onChange={handleTextChange}
+                />
+              </Box>
+              
               <TextField
                 name="dueDate"
                 label="Target Completion Date"

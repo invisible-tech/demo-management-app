@@ -13,6 +13,7 @@ const requestDemoSchema = z.object({
   description: z.string().min(1, "Description is required"),
   requestedBy: z.string().min(1, "Requested By is required"),
   dueDate: z.string().optional(),
+  vertical: z.string().optional(),
 })
 
 type RequestDemoFormData = z.infer<typeof requestDemoSchema>

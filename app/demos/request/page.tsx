@@ -32,14 +32,7 @@ export default function RequestDemoPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          ...data,
-          status: "requested",
-          assignedTo: "n/a",
-          url: "",
-          authDetails: "",
-          client: data.requestedBy
-        }),
+        body: JSON.stringify(data),
       })
       
       if (!response.ok) {

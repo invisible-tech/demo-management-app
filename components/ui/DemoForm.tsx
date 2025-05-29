@@ -203,7 +203,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         recordingUrl: '',
         authDetails: '',
         dueDate: updatedFormData.dueDate || undefined,
-        client: updatedFormData.requestedBy || undefined,
+        client: updatedFormData.requestedBy || '',
       };
     } else if (isEdit) {
       submissionData = {
@@ -298,7 +298,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
                 name="requestedBy"
                 label={isEdit ? 'Client' : 'Requested By'}
                 fullWidth
-                required={isEdit || isRegister ? false : true}
+                required={isRequest || isEdit || isRegister}
                 variant="outlined"
                 value={formData.requestedBy}
                 onChange={handleTextChange}

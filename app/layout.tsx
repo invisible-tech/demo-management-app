@@ -3,10 +3,9 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import ThemeRegistry from "../theme/ThemeRegistry";
-import AppBar from "../components/AppBar";
-import LeftNavDrawer from "../components/ui/LeftNavDrawer";
-import { Box, CssBaseline, Button, Container, Typography } from "@mui/material";
+import { CssBaseline, Container, Box, AppBar, Typography, Button } from "@mui/material";
 import { auth0 } from "@/lib/auth0";
+import LeftNavDrawer from "@/components/ui/LeftNavDrawer";
 
 const inter = Inter({ subsets: ["latin"] });
 

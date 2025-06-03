@@ -1,7 +1,15 @@
 import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { auth0 } from "./lib/auth0";
 
 export async function middleware(request: NextRequest) {
+  // Bypass Auth0 middleware in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔓 Auth0 middleware bypassed in development mode');
+    return NextResponse.next();
+  }
+  
+  // Use Auth0 middleware in production
   return await auth0.middleware(request);
 }
 

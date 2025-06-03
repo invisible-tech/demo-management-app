@@ -88,7 +88,6 @@ export default function DemoTabs({
           variant="scrollable"
           scrollButtons="auto"
           className={styles.tabs}
-          centered
           TabIndicatorProps={{
             style: {
               backgroundColor: '#1976d2',

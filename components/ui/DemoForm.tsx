@@ -62,6 +62,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
     type: 'general', // Default type
     template: 'old_template', // Default template
     url: '',
+    url2: '', // Second demo URL field
     scriptUrl: '',
     recordingUrl: '',
     authDetails: '',
@@ -113,6 +114,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         type: demo.type || 'general',
         template: demo.template || 'old_template',
         url: demo.url || '',
+        url2: demo.url2 || '', // Second demo URL field
         scriptUrl: demo.scriptUrl || '',
         recordingUrl: demo.recordingUrl || '',
         authDetails: demo.authDetails || '',
@@ -200,6 +202,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         template: updatedFormData.template,
         assignedTo: updatedFormData.assignedTo,
         url: updatedFormData.url,
+        url2: updatedFormData.url2, // Second demo URL field
         scriptUrl: updatedFormData.scriptUrl,
         recordingUrl: updatedFormData.recordingUrl,
         authDetails: updatedFormData.authDetails,
@@ -218,6 +221,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         template: updatedFormData.template,
         assignedTo: updatedFormData.assignedTo,
         url: updatedFormData.url,
+        url2: updatedFormData.url2, // Second demo URL field
         scriptUrl: updatedFormData.scriptUrl,
         recordingUrl: updatedFormData.recordingUrl,
         authDetails: updatedFormData.authDetails,
@@ -236,6 +240,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         template: updatedFormData.template,
         assignedTo: updatedFormData.assignedTo,
         url: updatedFormData.url,
+        url2: updatedFormData.url2, // Second demo URL field
         scriptUrl: updatedFormData.scriptUrl,
         recordingUrl: updatedFormData.recordingUrl,
         authDetails: updatedFormData.authDetails,
@@ -464,6 +469,16 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
                 sx={{ mb: 3 }}
                 value={formData.url}
                 onChange={handleTextChange}
+              />
+              
+              <TextField
+                name="url2"
+                label="Demo URL 2 (optional)"
+                fullWidth
+                sx={{ mb: 3 }}
+                value={formData.url2}
+                onChange={handleTextChange}
+                placeholder="Additional demo URL if available"
               />
               
               <TextField

@@ -19,11 +19,7 @@ import {
   FormControl,
   InputLabel,
   Select,
-  Stack,
-  IconButton,
-  Tooltip,
   Typography,
-  Menu,
   ClickAwayListener,
   Grow,
   Popper,
@@ -31,9 +27,7 @@ import {
   ListItemIcon,
   ListItemText
 } from '@mui/material';
-import { ExternalLink, Link2Off, FileText, Video, ChevronDown } from 'lucide-react';
-import { AwesomeButton } from 'react-awesome-button';
-import 'react-awesome-button/dist/styles.css';
+import { ExternalLink, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { Demo } from '@/lib/schema';
 import styles from './DemoTable.module.css';
@@ -59,10 +53,6 @@ const getStatusColor = (status: string): StatusColor => {
 
 const formatStatus = (status: string) => {
   return status.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase());
-};
-
-const formatType = (type: string) => {
-  return type.charAt(0).toUpperCase() + type.slice(1);
 };
 
 // Get detailed status based on missing items
@@ -136,61 +126,72 @@ function DemoUrlButton({ demo }: DemoUrlButtonProps) {
 
   if (!hasUrl) {
     return (
-      <AwesomeButton
-        type="secondary"
+      <Button
+        variant="contained"
         size="small"
         disabled
-        style={{ 
+        sx={{ 
           minWidth: '80px',
-          '--button-secondary-color': '#f44336',
-          '--button-secondary-color-dark': '#d32f2f',
-          '--button-secondary-color-light': '#ffcdd2',
-          '--button-secondary-color-hover': '#e53935',
-          '--button-secondary-border': '#f44336'
-        } as any}
+          width: '80px',
+          bgcolor: '#f44336',
+          '&:hover': {
+            bgcolor: '#d32f2f'
+          },
+          '&.Mui-disabled': {
+            bgcolor: '#d32f2f',
+            color: 'white'
+          }
+        }}
       >
         Missing
-      </AwesomeButton>
+      </Button>
     );
   }
 
   if (!hasMultipleUrls) {
     // Single URL - show regular button
     return (
-      <AwesomeButton
-        type="primary"
+      <Button
+        variant="contained"
         size="small"
-        onPress={handleToggle}
-        style={{ 
+        onClick={handleToggle}
+        sx={{ 
           minWidth: '80px',
-          '--button-primary-color': '#4caf50',
-          '--button-primary-color-dark': '#388e3c',
-          '--button-primary-color-light': '#c8e6c9',
-          '--button-primary-color-hover': '#66bb6a'
-        } as any}
+          width: '80px',
+          bgcolor: '#4caf50',
+          '&:hover': {
+            bgcolor: '#388e3c'
+          }
+        }}
       >
         View
-      </AwesomeButton>
+      </Button>
     );
   }
 
   // Multiple URLs - show dropdown button
   return (
     <>
-      <AwesomeButton
-        type="primary"
+      <Button
+        variant="contained"
         size="small"
-        onPress={handleToggle}
-        style={{ 
+        onClick={handleToggle}
+        endIcon={<ChevronDown size={12} />}
+        sx={{ 
           minWidth: '80px',
-          '--button-primary-color': '#4caf50',
-          '--button-primary-color-dark': '#388e3c',
-          '--button-primary-color-light': '#c8e6c9',
-          '--button-primary-color-hover': '#66bb6a'
-        } as any}
+          width: '80px',
+          bgcolor: '#4caf50',
+          '&:hover': {
+            bgcolor: '#388e3c'
+          },
+          '& .MuiButton-endIcon': {
+            marginLeft: 'auto',
+            marginRight: '-4px'
+          }
+        }}
       >
-        View <ChevronDown size={14} style={{ marginLeft: '4px' }} />
-      </AwesomeButton>
+        View
+      </Button>
       <Popper
         open={open}
         anchorEl={anchorEl}
@@ -285,17 +286,9 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
     search: '',
   });
   
-  // Check if all demos in this table are complete
-  const isCompleteTable = demos.length > 0 && demos.every(demo => 
-    !!demo.url && !!demo.scriptUrl && !!demo.recordingUrl
-  );
-  
   // Determine which columns to show based on tab type
   const showClientColumn = tabType !== 'general';
   const showVerticalColumn = tabType !== 'client-specific';
-  
-  // Demo types for filter
-  const demoTypes = ['general', 'specific'];
 
   // Handle filter changes
   const handleFilterChange = (filterName: keyof typeof filters) => (
@@ -362,28 +355,6 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
-
-  // Utility function to validate URL
-  const isValidUrl = (url: string | undefined): boolean => {
-    if (!url) return false;
-    try {
-      new URL(url);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  };
-
-  // Display URL in a readable format
-  const formatUrl = (url: string | undefined): string => {
-    if (!url) return '-';
-    try {
-      const urlObj = new URL(url);
-      return urlObj.hostname + (urlObj.pathname !== "/" ? urlObj.pathname : "");
-    } catch (e) {
-      return url;
-    }
-  };
 
   return (
     <Paper className={styles.tableContainer}>
@@ -560,74 +531,12 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
                   
                   {/* Script button */}
                   <TableCell className={styles.centered}>
-                    {isValidUrl(demo.scriptUrl) ? (
-                      <AwesomeButton
-                        type="primary"
-                        size="small"
-                        onPress={() => window.open(demo.scriptUrl, '_blank', 'noopener,noreferrer')}
-                        style={{ 
-                          minWidth: '80px',
-                          '--button-primary-color': '#4caf50',
-                          '--button-primary-color-dark': '#388e3c',
-                          '--button-primary-color-light': '#c8e6c9',
-                          '--button-primary-color-hover': '#66bb6a'
-                        } as any}
-                      >
-                        Script
-                      </AwesomeButton>
-                    ) : (
-                      <AwesomeButton
-                        type="secondary"
-                        size="small"
-                        disabled
-                        style={{ 
-                          minWidth: '80px',
-                          '--button-secondary-color': '#f44336',
-                          '--button-secondary-color-dark': '#d32f2f',
-                          '--button-secondary-color-light': '#ffcdd2',
-                          '--button-secondary-color-hover': '#e53935',
-                          '--button-secondary-border': '#f44336'
-                        } as any}
-                      >
-                        Missing
-                      </AwesomeButton>
-                    )}
+                    <ScriptButton demo={demo} />
                   </TableCell>
                   
                   {/* Recording button */}
                   <TableCell className={styles.centered}>
-                    {isValidUrl(demo.recordingUrl) ? (
-                      <AwesomeButton
-                        type="primary"
-                        size="small"
-                        onPress={() => window.open(demo.recordingUrl, '_blank', 'noopener,noreferrer')}
-                        style={{ 
-                          minWidth: '80px',
-                          '--button-primary-color': '#4caf50',
-                          '--button-primary-color-dark': '#388e3c',
-                          '--button-primary-color-light': '#c8e6c9',
-                          '--button-primary-color-hover': '#66bb6a'
-                        } as any}
-                      >
-                        Recording
-                      </AwesomeButton>
-                    ) : (
-                      <AwesomeButton
-                        type="secondary"
-                        size="small"
-                        disabled
-                        style={{ 
-                          minWidth: '80px',
-                          '--button-secondary-color': '#f44336',
-                          '--button-secondary-color-dark': '#d32f2f',
-                          '--button-secondary-color-light': '#ffcdd2',
-                          '--button-secondary-color-hover': '#e53935',
-                          '--button-secondary-border': '#f44336'
-                        } as any}
-                      >
-                        Missing
-                      </AwesomeButton>
-                    )}
+                    <RecordingButton demo={demo} />
                   </TableCell>
                   
                   <TableCell>
@@ -677,4 +586,114 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
       />
     </Paper>
   );
-} 
+}
+
+// Script button component
+function ScriptButton({ demo }: { demo: Demo }) {
+  const isValidUrl = (url: string | undefined): boolean => {
+    if (!url) return false;
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  if (isValidUrl(demo.scriptUrl)) {
+    return (
+      <Button
+        variant="contained"
+        size="small"
+        onClick={() => window.open(demo.scriptUrl, '_blank', 'noopener,noreferrer')}
+        sx={{ 
+          minWidth: '80px',
+          width: '80px',
+          bgcolor: '#4caf50',
+          '&:hover': {
+            bgcolor: '#388e3c'
+          }
+        }}
+      >
+        Script
+      </Button>
+    );
+  } else {
+    return (
+      <Button
+        variant="contained"
+        size="small" 
+        disabled
+        sx={{ 
+          minWidth: '80px',
+          width: '80px',
+          bgcolor: '#f44336',
+          '&:hover': {
+            bgcolor: '#d32f2f'
+          },
+          '&.Mui-disabled': {
+            bgcolor: '#d32f2f',
+            color: 'white'
+          }
+        }}
+      >
+        Missing
+      </Button>
+    );
+  }
+}
+
+// Recording button component
+function RecordingButton({ demo }: { demo: Demo }) {
+  const isValidUrl = (url: string | undefined): boolean => {
+    if (!url) return false;
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  if (isValidUrl(demo.recordingUrl)) {
+    return (
+      <Button
+        variant="contained"
+        size="small"
+        onClick={() => window.open(demo.recordingUrl, '_blank', 'noopener,noreferrer')}
+        sx={{ 
+          minWidth: '80px',
+          width: '80px',
+          bgcolor: '#4caf50',
+          '&:hover': {
+            bgcolor: '#388e3c'
+          }
+        }}
+      >
+        Recording
+      </Button>
+    );
+  } else {
+    return (
+      <Button
+        variant="contained"
+        size="small" 
+        disabled
+        sx={{ 
+          minWidth: '80px',
+          width: '80px',
+          bgcolor: '#f44336',
+          '&:hover': {
+            bgcolor: '#d32f2f'
+          },
+          '&.Mui-disabled': {
+            bgcolor: '#d32f2f',
+            color: 'white'
+          }
+        }}
+      >
+        Missing
+      </Button>
+    );
+  }
+}

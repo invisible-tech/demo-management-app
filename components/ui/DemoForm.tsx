@@ -2,17 +2,14 @@
 import { useState, useEffect } from 'react';
 import { 
   Box, 
-
   Typography, 
   TextField, 
   Button, 
   FormControl, 
-
   MenuItem, 
   Select,
   SelectChangeEvent,
   InputLabel,
-  Divider,
   Paper
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -28,16 +25,6 @@ const FormPaper = styled(Paper)(({ theme }) => ({
 
 const FormSection = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(4)
-}));
-
-const FormTitle = styled(Typography)(({ theme }) => ({
-  marginBottom: theme.spacing(3),
-  fontWeight: 'bold',
-  color: theme.palette.primary.main
-}));
-
-const FormDivider = styled(Divider)(({ theme }) => ({
-  margin: theme.spacing(4, 0),
 }));
 
 const FormActions = styled(Box)(({ theme }) => ({
@@ -59,7 +46,6 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
   const isRegister = type === 'register';
   const isEdit = type === 'edit';
   const isSubmit = type === 'submit';
-  const formTitle = isRequest ? 'Request a Demo' : isEdit ? 'Edit Demo' : 'Register a Demo';
   
   // URL preview for slug
   const [slugPreview, setSlugPreview] = useState('');
@@ -298,7 +284,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
                 name="requestedBy"
                 label={isEdit ? 'Client' : 'Requested By'}
                 fullWidth
-                required={isRequest || isEdit || isRegister}
+                required={isRequest || (isEdit && !formData.vertical?.trim()) || (isRegister && !formData.vertical?.trim())}
                 variant="outlined"
                 value={formData.requestedBy}
                 onChange={handleTextChange}
@@ -403,6 +389,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
                   variant="outlined"
                   value={formData.vertical}
                   onChange={handleTextChange}
+                  required={(isEdit && !formData.requestedBy?.trim()) || (isRegister && !formData.requestedBy?.trim())}
                   error={Boolean(errors.clientVertical) && (isEdit || isRegister)}
                   helperText={(isEdit || isRegister) ? "Choose one: Either fill Client OR Vertical field" : ""}
                 />
@@ -417,6 +404,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
                   variant="outlined"
                   value={formData.requestedBy}
                   onChange={handleTextChange}
+                  required={!formData.vertical?.trim()}
                   error={Boolean(errors.clientVertical)}
                   helperText="Choose one: Either fill Client OR Vertical field"
                   sx={{ mb: 3 }}

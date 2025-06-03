@@ -22,9 +22,18 @@ import {
   Stack,
   IconButton,
   Tooltip,
-  Typography
+  Typography,
+  Menu,
+  ClickAwayListener,
+  Grow,
+  Popper,
+  MenuList,
+  ListItemIcon,
+  ListItemText
 } from '@mui/material';
-import { ExternalLink, Link2Off, FileText, Video } from 'lucide-react';
+import { ExternalLink, Link2Off, FileText, Video, ChevronDown } from 'lucide-react';
+import { AwesomeButton } from 'react-awesome-button';
+import 'react-awesome-button/dist/styles.css';
 import Link from 'next/link';
 import { Demo } from '@/lib/schema';
 import styles from './DemoTable.module.css';
@@ -87,6 +96,181 @@ interface DemoTableProps {
   clients: string[];
   statuses: string[];
   tabType?: 'general' | 'client-specific' | 'all';
+}
+
+// New component for multi-URL demo button
+interface DemoUrlButtonProps {
+  demo: Demo;
+}
+
+function DemoUrlButton({ demo }: DemoUrlButtonProps) {
+  const [open, setOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  
+  const hasUrl = !!demo.url || !!demo.slug;
+  const hasUrl2 = !!demo.url2;
+  const hasMultipleUrls = hasUrl && hasUrl2;
+  
+  const handleToggle = (event: React.MouseEvent<HTMLElement>) => {
+    if (hasMultipleUrls) {
+      setAnchorEl(event.currentTarget);
+      setOpen((prevOpen) => !prevOpen);
+    } else if (hasUrl) {
+      // Single URL - redirect directly
+      if (demo.slug) {
+        window.open(`/${demo.slug}`, '_blank', 'noopener,noreferrer');
+      } else if (demo.url) {
+        window.open(demo.url, '_blank', 'noopener,noreferrer');
+      }
+    }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleMenuItemClick = (url: string) => {
+    window.open(url, '_blank', 'noopener,noreferrer');
+    setOpen(false);
+  };
+
+  if (!hasUrl) {
+    return (
+      <AwesomeButton
+        type="secondary"
+        size="small"
+        disabled
+        style={{ 
+          minWidth: '80px',
+          '--button-secondary-color': '#f44336',
+          '--button-secondary-color-dark': '#d32f2f',
+          '--button-secondary-color-light': '#ffcdd2',
+          '--button-secondary-color-hover': '#e53935',
+          '--button-secondary-border': '#f44336'
+        } as any}
+      >
+        Missing
+      </AwesomeButton>
+    );
+  }
+
+  if (!hasMultipleUrls) {
+    // Single URL - show regular button
+    return (
+      <AwesomeButton
+        type="primary"
+        size="small"
+        onPress={handleToggle}
+        style={{ 
+          minWidth: '80px',
+          '--button-primary-color': '#4caf50',
+          '--button-primary-color-dark': '#388e3c',
+          '--button-primary-color-light': '#c8e6c9',
+          '--button-primary-color-hover': '#66bb6a'
+        } as any}
+      >
+        View
+      </AwesomeButton>
+    );
+  }
+
+  // Multiple URLs - show dropdown button
+  return (
+    <>
+      <AwesomeButton
+        type="primary"
+        size="small"
+        onPress={handleToggle}
+        style={{ 
+          minWidth: '80px',
+          '--button-primary-color': '#4caf50',
+          '--button-primary-color-dark': '#388e3c',
+          '--button-primary-color-light': '#c8e6c9',
+          '--button-primary-color-hover': '#66bb6a'
+        } as any}
+      >
+        View <ChevronDown size={14} style={{ marginLeft: '4px' }} />
+      </AwesomeButton>
+      <Popper
+        open={open}
+        anchorEl={anchorEl}
+        role={undefined}
+        placement="bottom-start"
+        transition
+        disablePortal
+        sx={{ zIndex: 1300 }}
+      >
+        {({ TransitionProps, placement }) => (
+          <Grow
+            {...TransitionProps}
+            style={{
+              transformOrigin:
+                placement === 'bottom-start' ? 'left top' : 'left bottom',
+            }}
+          >
+            <Paper>
+              <ClickAwayListener onClickAway={handleClose}>
+                <MenuList id="split-button-menu" autoFocusItem>
+                  {demo.slug && (
+                    <MenuItem
+                      key="primary"
+                      onClick={() => handleMenuItemClick(`/${demo.slug}`)}
+                    >
+                      <ListItemIcon>
+                        <ExternalLink size={16} />
+                      </ListItemIcon>
+                      <ListItemText>
+                        Primary Demo
+                      </ListItemText>
+                    </MenuItem>
+                  )}
+                  {demo.url && demo.slug && (
+                    <MenuItem
+                      key="url1"
+                      onClick={() => handleMenuItemClick(demo.url!)}
+                    >
+                      <ListItemIcon>
+                        <ExternalLink size={16} />
+                      </ListItemIcon>
+                      <ListItemText>
+                        Demo URL 1
+                      </ListItemText>
+                    </MenuItem>
+                  )}
+                  {demo.url && !demo.slug && (
+                    <MenuItem
+                      key="url1"
+                      onClick={() => handleMenuItemClick(demo.url!)}
+                    >
+                      <ListItemIcon>
+                        <ExternalLink size={16} />
+                      </ListItemIcon>
+                      <ListItemText>
+                        Demo URL 1
+                      </ListItemText>
+                    </MenuItem>
+                  )}
+                  {demo.url2 && (
+                    <MenuItem
+                      key="url2"
+                      onClick={() => handleMenuItemClick(demo.url2!)}
+                    >
+                      <ListItemIcon>
+                        <ExternalLink size={16} />
+                      </ListItemIcon>
+                      <ListItemText>
+                        Demo URL 2
+                      </ListItemText>
+                    </MenuItem>
+                  )}
+                </MenuList>
+              </ClickAwayListener>
+            </Paper>
+          </Grow>
+        )}
+      </Popper>
+    </>
+  );
 }
 
 export default function DemoTable({ demos, verticals, clients, statuses, tabType = 'all' }: DemoTableProps) {
@@ -371,88 +555,78 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
                   
                   {/* Demo URL button */}
                   <TableCell className={styles.centered}>
-                    {demo.slug ? (
-                      <Button
-                        variant="contained"
-                        size="small"
-                        color="success"
-                        component="a"
-                        href={`/${demo.slug}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.actionButton}
-                        sx={{ minWidth: '80px' }}
-                      >
-                        View
-                      </Button>
-                    ) : (
-                      <Button 
-                        variant="contained" 
-                        size="small" 
-                        color="error" 
-                        className={styles.actionButton}
-                        sx={{ minWidth: '80px' }}
-                      >
-                        Missing
-                      </Button>
-                    )}
+                    <DemoUrlButton demo={demo} />
                   </TableCell>
                   
                   {/* Script button */}
                   <TableCell className={styles.centered}>
                     {isValidUrl(demo.scriptUrl) ? (
-                      <Button
-                        variant="contained"
+                      <AwesomeButton
+                        type="primary"
                         size="small"
-                        color="success"
-                        component="a"
-                        href={demo.scriptUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.actionButton}
-                        sx={{ minWidth: '80px' }}
+                        onPress={() => window.open(demo.scriptUrl, '_blank', 'noopener,noreferrer')}
+                        style={{ 
+                          minWidth: '80px',
+                          '--button-primary-color': '#4caf50',
+                          '--button-primary-color-dark': '#388e3c',
+                          '--button-primary-color-light': '#c8e6c9',
+                          '--button-primary-color-hover': '#66bb6a'
+                        } as any}
                       >
                         Script
-                      </Button>
+                      </AwesomeButton>
                     ) : (
-                      <Button 
-                        variant="contained" 
-                        size="small" 
-                        color="error" 
-                        className={styles.actionButton}
-                        sx={{ minWidth: '80px' }}
+                      <AwesomeButton
+                        type="secondary"
+                        size="small"
+                        disabled
+                        style={{ 
+                          minWidth: '80px',
+                          '--button-secondary-color': '#f44336',
+                          '--button-secondary-color-dark': '#d32f2f',
+                          '--button-secondary-color-light': '#ffcdd2',
+                          '--button-secondary-color-hover': '#e53935',
+                          '--button-secondary-border': '#f44336'
+                        } as any}
                       >
                         Missing
-                      </Button>
+                      </AwesomeButton>
                     )}
                   </TableCell>
                   
                   {/* Recording button */}
                   <TableCell className={styles.centered}>
                     {isValidUrl(demo.recordingUrl) ? (
-                      <Button
-                        variant="contained"
+                      <AwesomeButton
+                        type="primary"
                         size="small"
-                        color="success"
-                        component="a"
-                        href={demo.recordingUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.actionButton}
-                        sx={{ minWidth: '80px' }}
+                        onPress={() => window.open(demo.recordingUrl, '_blank', 'noopener,noreferrer')}
+                        style={{ 
+                          minWidth: '80px',
+                          '--button-primary-color': '#4caf50',
+                          '--button-primary-color-dark': '#388e3c',
+                          '--button-primary-color-light': '#c8e6c9',
+                          '--button-primary-color-hover': '#66bb6a'
+                        } as any}
                       >
                         Recording
-                      </Button>
+                      </AwesomeButton>
                     ) : (
-                      <Button 
-                        variant="contained" 
-                        size="small" 
-                        color="error" 
-                        className={styles.actionButton}
-                        sx={{ minWidth: '80px' }}
+                      <AwesomeButton
+                        type="secondary"
+                        size="small"
+                        disabled
+                        style={{ 
+                          minWidth: '80px',
+                          '--button-secondary-color': '#f44336',
+                          '--button-secondary-color-dark': '#d32f2f',
+                          '--button-secondary-color-light': '#ffcdd2',
+                          '--button-secondary-color-hover': '#e53935',
+                          '--button-secondary-border': '#f44336'
+                        } as any}
                       >
                         Missing
-                      </Button>
+                      </AwesomeButton>
                     )}
                   </TableCell>
                   

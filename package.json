@@ -31,7 +31,6 @@
     "next": "15.3.2",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
-    "react-awesome-button": "^7.0.5",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.56.2",
     "react-is": "^18.3.1",

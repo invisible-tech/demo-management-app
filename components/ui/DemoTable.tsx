@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Table,
   TableBody,
@@ -32,8 +32,6 @@ import {
   ListItemText
 } from '@mui/material';
 import { ExternalLink, Link2Off, FileText, Video, ChevronDown } from 'lucide-react';
-import { AwesomeButton } from 'react-awesome-button';
-import 'react-awesome-button/dist/styles.css';
 import Link from 'next/link';
 import { Demo } from '@/lib/schema';
 import styles from './DemoTable.module.css';
@@ -136,61 +134,75 @@ function DemoUrlButton({ demo }: DemoUrlButtonProps) {
 
   if (!hasUrl) {
     return (
-      <AwesomeButton
-        type="secondary"
+      <Button
+        variant="contained"
         size="small"
         disabled
-        style={{ 
+        sx={{ 
           minWidth: '80px',
-          '--button-secondary-color': '#f44336',
-          '--button-secondary-color-dark': '#d32f2f',
-          '--button-secondary-color-light': '#ffcdd2',
-          '--button-secondary-color-hover': '#e53935',
-          '--button-secondary-border': '#f44336'
-        } as any}
+          width: '80px',
+          bgcolor: '#f44336',
+          color: 'white',
+          '&:hover': {
+            bgcolor: '#d32f2f'
+          },
+          '&.Mui-disabled': {
+            bgcolor: '#f44336',
+            color: 'white'
+          }
+        }}
       >
         Missing
-      </AwesomeButton>
+      </Button>
     );
   }
 
   if (!hasMultipleUrls) {
     // Single URL - show regular button
     return (
-      <AwesomeButton
-        type="primary"
+      <Button
+        variant="contained"
         size="small"
-        onPress={handleToggle}
-        style={{ 
+        onClick={handleToggle}
+        sx={{ 
           minWidth: '80px',
-          '--button-primary-color': '#4caf50',
-          '--button-primary-color-dark': '#388e3c',
-          '--button-primary-color-light': '#c8e6c9',
-          '--button-primary-color-hover': '#66bb6a'
-        } as any}
+          width: '80px',
+          bgcolor: '#4caf50',
+          color: 'white',
+          '&:hover': {
+            bgcolor: '#388e3c'
+          }
+        }}
       >
         View
-      </AwesomeButton>
+      </Button>
     );
   }
 
   // Multiple URLs - show dropdown button
   return (
     <>
-      <AwesomeButton
-        type="primary"
+      <Button
+        variant="contained"
         size="small"
-        onPress={handleToggle}
-        style={{ 
+        onClick={handleToggle}
+        endIcon={<ChevronDown size={14} />}
+        sx={{ 
           minWidth: '80px',
-          '--button-primary-color': '#4caf50',
-          '--button-primary-color-dark': '#388e3c',
-          '--button-primary-color-light': '#c8e6c9',
-          '--button-primary-color-hover': '#66bb6a'
-        } as any}
+          width: '80px',
+          bgcolor: '#4caf50',
+          color: 'white',
+          '&:hover': {
+            bgcolor: '#388e3c'
+          },
+          '& .MuiButton-endIcon': {
+            marginLeft: 'auto',
+            marginRight: '-4px'
+          }
+        }}
       >
-        View <ChevronDown size={14} style={{ marginLeft: '4px' }} />
-      </AwesomeButton>
+        View
+      </Button>
       <Popper
         open={open}
         anchorEl={anchorEl}
@@ -561,72 +573,86 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
                   {/* Script button */}
                   <TableCell className={styles.centered}>
                     {isValidUrl(demo.scriptUrl) ? (
-                      <AwesomeButton
-                        type="primary"
+                      <Button
+                        variant="contained"
                         size="small"
-                        onPress={() => window.open(demo.scriptUrl, '_blank', 'noopener,noreferrer')}
-                        style={{ 
+                        onClick={() => window.open(demo.scriptUrl, '_blank', 'noopener,noreferrer')}
+                        sx={{ 
                           minWidth: '80px',
-                          '--button-primary-color': '#4caf50',
-                          '--button-primary-color-dark': '#388e3c',
-                          '--button-primary-color-light': '#c8e6c9',
-                          '--button-primary-color-hover': '#66bb6a'
-                        } as any}
+                          width: '80px',
+                          bgcolor: '#4caf50',
+                          color: 'white',
+                          '&:hover': {
+                            bgcolor: '#388e3c'
+                          }
+                        }}
                       >
                         Script
-                      </AwesomeButton>
+                      </Button>
                     ) : (
-                      <AwesomeButton
-                        type="secondary"
+                      <Button
+                        variant="contained"
                         size="small"
                         disabled
-                        style={{ 
+                        sx={{ 
                           minWidth: '80px',
-                          '--button-secondary-color': '#f44336',
-                          '--button-secondary-color-dark': '#d32f2f',
-                          '--button-secondary-color-light': '#ffcdd2',
-                          '--button-secondary-color-hover': '#e53935',
-                          '--button-secondary-border': '#f44336'
-                        } as any}
+                          width: '80px',
+                          bgcolor: '#f44336',
+                          color: 'white',
+                          '&:hover': {
+                            bgcolor: '#d32f2f'
+                          },
+                          '&.Mui-disabled': {
+                            bgcolor: '#f44336',
+                            color: 'white'
+                          }
+                        }}
                       >
                         Missing
-                      </AwesomeButton>
+                      </Button>
                     )}
                   </TableCell>
                   
                   {/* Recording button */}
                   <TableCell className={styles.centered}>
                     {isValidUrl(demo.recordingUrl) ? (
-                      <AwesomeButton
-                        type="primary"
+                      <Button
+                        variant="contained"
                         size="small"
-                        onPress={() => window.open(demo.recordingUrl, '_blank', 'noopener,noreferrer')}
-                        style={{ 
+                        onClick={() => window.open(demo.recordingUrl, '_blank', 'noopener,noreferrer')}
+                        sx={{ 
                           minWidth: '80px',
-                          '--button-primary-color': '#4caf50',
-                          '--button-primary-color-dark': '#388e3c',
-                          '--button-primary-color-light': '#c8e6c9',
-                          '--button-primary-color-hover': '#66bb6a'
-                        } as any}
+                          width: '80px',
+                          bgcolor: '#4caf50',
+                          color: 'white',
+                          '&:hover': {
+                            bgcolor: '#388e3c'
+                          }
+                        }}
                       >
                         Recording
-                      </AwesomeButton>
+                      </Button>
                     ) : (
-                      <AwesomeButton
-                        type="secondary"
+                      <Button
+                        variant="contained"
                         size="small"
                         disabled
-                        style={{ 
+                        sx={{ 
                           minWidth: '80px',
-                          '--button-secondary-color': '#f44336',
-                          '--button-secondary-color-dark': '#d32f2f',
-                          '--button-secondary-color-light': '#ffcdd2',
-                          '--button-secondary-color-hover': '#e53935',
-                          '--button-secondary-border': '#f44336'
-                        } as any}
+                          width: '80px',
+                          bgcolor: '#f44336',
+                          color: 'white',
+                          '&:hover': {
+                            bgcolor: '#d32f2f'
+                          },
+                          '&.Mui-disabled': {
+                            bgcolor: '#f44336',
+                            color: 'white'
+                          }
+                        }}
                       >
                         Missing
-                      </AwesomeButton>
+                      </Button>
                     )}
                   </TableCell>
                   

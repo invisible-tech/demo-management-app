@@ -348,6 +348,11 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
     }
     
     return true;
+  }).sort((a, b) => {
+    // Sort alphabetically by title (case-insensitive)
+    const titleA = (a.title || 'Untitled Demo').toLowerCase()
+    const titleB = (b.title || 'Untitled Demo').toLowerCase()
+    return titleA.localeCompare(titleB)
   });
 
   // Handle pagination
@@ -499,6 +504,12 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
               {tabType !== 'general' && showVerticalColumn && (
                 <TableCell className={`${styles.headerCell} ${styles.verticalColumn}`}>Vertical</TableCell>
               )}
+              {tabType === 'general' && (
+                <TableCell className={`${styles.headerCell} ${styles.componentColumn}`}>Component</TableCell>
+              )}
+              {tabType === 'general' && (
+                <TableCell className={`${styles.headerCell} ${styles.originColumn}`}>Origin</TableCell>
+              )}
               <TableCell className={`${styles.headerCell} ${styles.assignedToColumn}`}>Assigned To</TableCell>
               <TableCell className={`${styles.headerCell} ${styles.demoColumn}`}>Demo</TableCell>
               {tabType !== 'client-specific' && (
@@ -548,6 +559,12 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
                   </TableCell>
                   {tabType !== 'general' && showVerticalColumn && (
                     <TableCell>{demo.vertical || '-'}</TableCell>
+                  )}
+                  {tabType === 'general' && (
+                    <TableCell>{demo.component || '-'}</TableCell>
+                  )}
+                  {tabType === 'general' && (
+                    <TableCell>{demo.origin || '-'}</TableCell>
                   )}
                   <TableCell>{demo.assignedTo || '-'}</TableCell>
                   
@@ -671,7 +688,7 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
             ) : (
               <TableRow>
                 <TableCell 
-                  colSpan={8 + (showClientColumn ? 1 : 0) + (showVerticalColumn ? 1 : 0) - (tabType === 'client-specific' ? 2 : 0)} 
+                  colSpan={8 + (showClientColumn ? 1 : 0) + (showVerticalColumn ? 1 : 0) + (tabType === 'general' ? 2 : 0) - (tabType === 'client-specific' ? 2 : 0)} 
                   className={styles.emptyMessage}
                 >
                   No demos found matching the current filters

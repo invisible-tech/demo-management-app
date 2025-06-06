@@ -70,7 +70,14 @@ export async function GET(request: NextRequest) {
       return true
     })
 
-    return NextResponse.json(filteredDemos)
+    // Sort demos alphabetically by title (case-insensitive)
+    const sortedDemos = filteredDemos.sort((a, b) => {
+      const titleA = (a.title || 'Untitled Demo').toLowerCase()
+      const titleB = (b.title || 'Untitled Demo').toLowerCase()
+      return titleA.localeCompare(titleB)
+    })
+
+    return NextResponse.json(sortedDemos)
   } catch (error: unknown) {
     console.error("Error fetching demos:", error)
     return NextResponse.json(

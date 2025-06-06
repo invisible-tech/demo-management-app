@@ -49,6 +49,14 @@
   width: 8%;
 }
 
+.componentColumn {
+  width: 10%;
+}
+
+.originColumn {
+  width: 10%;
+}
+
 /* Button styles */
 .actionButton {
   min-width: 80px !important;

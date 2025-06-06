@@ -64,12 +64,8 @@ export default function DemoTabs({
     demo => !isClientSpecific(demo) && !isDemoComplete(demo)
   );
   
-  const clientSpecificCompleteDemos = demos.filter(
-    demo => isClientSpecific(demo) && isDemoComplete(demo)
-  );
-  
-  const clientSpecificInProgressDemos = demos.filter(
-    demo => isClientSpecific(demo) && !isDemoComplete(demo)
+  const clientSpecificDemos = demos.filter(
+    demo => isClientSpecific(demo)
   );
 
   return (
@@ -95,7 +91,7 @@ export default function DemoTabs({
           }}
         >
           <Tab 
-            label={`General Complete (${generalCompleteDemos.length})`} 
+            label={`Approved General Demos (${generalCompleteDemos.length})`} 
             id="demo-tab-0" 
             className={styles.tabItem}
           />
@@ -105,18 +101,13 @@ export default function DemoTabs({
             className={styles.tabItem}
           />
           <Tab 
-            label={`Client-Specific Complete (${clientSpecificCompleteDemos.length})`} 
+            label={`Client-Specific Demos (${clientSpecificDemos.length})`} 
             id="demo-tab-2" 
             className={styles.tabItem}
           />
           <Tab 
-            label={`Client-Specific In Progress (${clientSpecificInProgressDemos.length})`} 
-            id="demo-tab-3" 
-            className={styles.tabItem}
-          />
-          <Tab 
             label={`All Demos (${demos.length})`} 
-            id="demo-tab-4" 
+            id="demo-tab-3" 
             className={styles.tabItem}
           />
         </Tabs>
@@ -144,7 +135,7 @@ export default function DemoTabs({
       
       <TabPanel value={value} index={2}>
         <DemoTable 
-          demos={clientSpecificCompleteDemos} 
+          demos={clientSpecificDemos} 
           verticals={verticals} 
           clients={clients} 
           statuses={statuses} 
@@ -153,16 +144,6 @@ export default function DemoTabs({
       </TabPanel>
       
       <TabPanel value={value} index={3}>
-        <DemoTable 
-          demos={clientSpecificInProgressDemos} 
-          verticals={verticals} 
-          clients={clients} 
-          statuses={statuses} 
-          tabType="client-specific"
-        />
-      </TabPanel>
-      
-      <TabPanel value={value} index={4}>
         <DemoTable 
           demos={demos} 
           verticals={verticals} 

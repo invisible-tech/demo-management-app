@@ -40,6 +40,9 @@ export const demoBaseSchema = z.object({
   updatedAt: z.string(), // ISO date string
   vertical: z.string().optional(),
   tags: z.array(z.string()).default([]),
+  component: z.string().optional(),
+  componentSlug: z.string().optional(), // Optional slug for component URL
+  origin: z.string().optional(), // e.g., "client-specific" if originated from a client demo
 });
 
 // Schema for demo data validation with refinement

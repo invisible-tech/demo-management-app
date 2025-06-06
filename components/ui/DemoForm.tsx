@@ -49,6 +49,7 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
   
   // URL preview for slug
   const [slugPreview, setSlugPreview] = useState('');
+  const [componentSlugPreview, setComponentSlugPreview] = useState('');
   
   // Form state
   const [formData, setFormData] = useState({
@@ -69,7 +70,10 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
     assignedTo: isRequest ? 'n/a' : '',
     slug: '',
     vertical: '',
-    useCase: ''
+    useCase: '',
+    component: '',
+    componentSlug: '',
+    origin: ''
   });
 
   // Form validation errors
@@ -85,6 +89,15 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
       setSlugPreview('');
     }
   }, [formData.slug]);
+  
+  // Update component slug preview when componentSlug changes
+  useEffect(() => {
+    if (formData.componentSlug) {
+      setComponentSlugPreview(`https://components.inv.tech/${formData.componentSlug}`);
+    } else {
+      setComponentSlugPreview('');
+    }
+  }, [formData.componentSlug]);
   
   // Determine type based on client field
   useEffect(() => {
@@ -121,7 +134,10 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         assignedTo: demo.assignedTo || '',
         slug: demo.slug || '',
         vertical: demo.vertical || '',
-        useCase: demo.useCase || ''
+        useCase: demo.useCase || '',
+        component: demo.component || '',
+        componentSlug: demo.componentSlug || '',
+        origin: demo.origin || ''
       });
     }
   }, [demo, isEdit]);
@@ -210,7 +226,10 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         client: updatedFormData.requestedBy,
         slug: updatedFormData.slug,
         vertical: updatedFormData.vertical,
-        useCase: updatedFormData.useCase
+        useCase: updatedFormData.useCase,
+        component: updatedFormData.component,
+        componentSlug: updatedFormData.componentSlug,
+        origin: updatedFormData.origin
       };
     } else if (isRegister) {
       submissionData = {
@@ -228,6 +247,9 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         slug: updatedFormData.slug,
         vertical: updatedFormData.vertical,
         useCase: updatedFormData.useCase,
+        component: updatedFormData.component,
+        componentSlug: updatedFormData.componentSlug,
+        origin: updatedFormData.origin,
         client: updatedFormData.requestedBy
       };
     } else {
@@ -247,6 +269,9 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
         slug: updatedFormData.slug,
         vertical: updatedFormData.vertical,
         useCase: updatedFormData.useCase,
+        component: updatedFormData.component,
+        componentSlug: updatedFormData.componentSlug,
+        origin: updatedFormData.origin,
         client: updatedFormData.requestedBy
       };
     }
@@ -414,6 +439,49 @@ export default function DemoForm({ type, onSubmit, isSubmitting = false, demo }:
                   helperText="Choose one: Either fill Client OR Vertical field"
                   sx={{ mb: 3 }}
                 />
+              )}
+              
+              {/* Component and Origin fields - only for general demos */}
+              {(isEdit || isRegister) && formData.type === 'general' && (
+                <>
+                  <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, mb: 3 }}>
+                    <TextField
+                      name="component"
+                      label="Component"
+                      fullWidth
+                      variant="outlined"
+                      value={formData.component}
+                      onChange={handleTextChange}
+                      placeholder="e.g., API Management, Security, etc."
+                    />
+                    
+                    <TextField
+                      name="componentSlug"
+                      label="Component Slug (optional)"
+                      fullWidth
+                      variant="outlined"
+                      value={formData.componentSlug}
+                      onChange={handleTextChange}
+                      placeholder="URL slug for component page"
+                      helperText={componentSlugPreview || "Creates a URL for the component resource, e.g., https://components.inv.tech/MY_COMPONENT"}
+                    />
+                  </Box>
+                  
+                  <FormControl fullWidth sx={{ mb: 3 }}>
+                    <InputLabel id="origin-label">Origin</InputLabel>
+                    <Select
+                      labelId="origin-label"
+                      name="origin"
+                      value={formData.origin}
+                      label="Origin"
+                      onChange={handleSelectChange}
+                    >
+                      <MenuItem value="">None</MenuItem>
+                      <MenuItem value="client-specific">Client-Specific Demo</MenuItem>
+                      <MenuItem value="original">Original General Demo</MenuItem>
+                    </Select>
+                  </FormControl>
+                </>
               )}
               
               {!isRegister && (

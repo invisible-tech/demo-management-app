@@ -39,13 +39,28 @@ export default function DemoStatusPage() {
         // Combine both sets of demos
         const allDemos = [...requestedData, ...inProgressData]
         
-        // Sort demos by due date (soonest first)
+        // Sort demos by due date (soonest first), then by title alphabetically
         const sortedDemos = [...allDemos].sort((a, b) => {
-          // Handle cases where dueDate might be missing
+          // First sort by due date
+          if (!a.dueDate && !b.dueDate) {
+            // If both don't have due dates, sort alphabetically by title
+            const titleA = (a.title || 'Untitled Demo').toLowerCase()
+            const titleB = (b.title || 'Untitled Demo').toLowerCase()
+            return titleA.localeCompare(titleB)
+          }
           if (!a.dueDate) return 1;  // Put items without due date at the end
           if (!b.dueDate) return -1;
           
-          return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+          const dateComparison = new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+          
+          // If due dates are the same, sort alphabetically by title
+          if (dateComparison === 0) {
+            const titleA = (a.title || 'Untitled Demo').toLowerCase()
+            const titleB = (b.title || 'Untitled Demo').toLowerCase()
+            return titleA.localeCompare(titleB)
+          }
+          
+          return dateComparison;
         });
         
         setDemos(sortedDemos || [])

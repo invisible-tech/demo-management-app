@@ -22,7 +22,7 @@ export default async function RootLayout({
 }>) {
   const session = await auth0.getSession();
   const invisibleUser = session?.user?.email?.includes('invisible.email')
-
+  console.log(session)
   return (
     <html lang="en">
       <body className={inter.className} style={{ backgroundColor: '#f5f5f5' }}>

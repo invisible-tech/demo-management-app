@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -19,11 +19,7 @@ import {
   FormControl,
   InputLabel,
   Select,
-  Stack,
-  IconButton,
-  Tooltip,
   Typography,
-  Menu,
   ClickAwayListener,
   Grow,
   Popper,
@@ -31,7 +27,7 @@ import {
   ListItemIcon,
   ListItemText
 } from '@mui/material';
-import { ExternalLink, Link2Off, FileText, Video, ChevronDown } from 'lucide-react';
+import { ExternalLink, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { Demo } from '@/lib/schema';
 import styles from './DemoTable.module.css';
@@ -59,17 +55,20 @@ const formatStatus = (status: string) => {
   return status.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase());
 };
 
-const formatType = (type: string) => {
-  return type.charAt(0).toUpperCase() + type.slice(1);
-};
+
 
 // Get detailed status based on missing items
-const getDetailedStatus = (demo: Demo): string => {
+const getDetailedStatus = (demo: Demo, isClientSpecific: boolean = false): string => {
   const hasUrl = !!demo.url;
   const hasScript = !!demo.scriptUrl;
   const hasRecording = !!demo.recordingUrl;
   
-  // Check if all items are present
+  // For client-specific demos, only check demo URL
+  if (isClientSpecific) {
+    return hasUrl ? 'ready' : 'In Progress (needs demo URL)';
+  }
+  
+  // For general demos, check all items
   if (hasUrl && hasScript && hasRecording) {
     return 'ready';
   }
@@ -297,17 +296,9 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
     search: '',
   });
   
-  // Check if all demos in this table are complete
-  const isCompleteTable = demos.length > 0 && demos.every(demo => 
-    !!demo.url && !!demo.scriptUrl && !!demo.recordingUrl
-  );
-  
   // Determine which columns to show based on tab type
   const showClientColumn = tabType !== 'general';
   const showVerticalColumn = tabType !== 'client-specific';
-  
-  // Demo types for filter
-  const demoTypes = ['general', 'specific'];
 
   // Handle filter changes
   const handleFilterChange = (filterName: keyof typeof filters) => (
@@ -381,21 +372,12 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
     try {
       new URL(url);
       return true;
-    } catch (e) {
+    } catch {
       return false;
     }
   };
 
-  // Display URL in a readable format
-  const formatUrl = (url: string | undefined): string => {
-    if (!url) return '-';
-    try {
-      const urlObj = new URL(url);
-      return urlObj.hostname + (urlObj.pathname !== "/" ? urlObj.pathname : "");
-    } catch (e) {
-      return url;
-    }
-  };
+
 
   return (
     <Paper className={styles.tableContainer}>
@@ -519,8 +501,12 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
               )}
               <TableCell className={`${styles.headerCell} ${styles.assignedToColumn}`}>Assigned To</TableCell>
               <TableCell className={`${styles.headerCell} ${styles.demoColumn}`}>Demo</TableCell>
-              <TableCell className={`${styles.headerCell} ${styles.scriptColumn}`}>Script</TableCell>
-              <TableCell className={`${styles.headerCell} ${styles.recordingColumn}`}>Recording</TableCell>
+              {tabType !== 'client-specific' && (
+                <TableCell className={`${styles.headerCell} ${styles.scriptColumn}`}>Script</TableCell>
+              )}
+              {tabType !== 'client-specific' && (
+                <TableCell className={`${styles.headerCell} ${styles.recordingColumn}`}>Recording</TableCell>
+              )}
               <TableCell className={`${styles.headerCell} ${styles.dueDateColumn}`}>Due Date</TableCell>
               <TableCell className={`${styles.headerCell} ${styles.actionColumn}`}>Edit</TableCell>
             </TableRow>
@@ -555,9 +541,9 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
                   )}
                   <TableCell>
                     <Chip 
-                      label={formatStatus(getDetailedStatus(demo))} 
+                      label={formatStatus(getDetailedStatus(demo, tabType === 'client-specific'))} 
                       size="small" 
-                      color={getStatusColor(getDetailedStatus(demo))} 
+                      color={getStatusColor(getDetailedStatus(demo, tabType === 'client-specific'))} 
                     />
                   </TableCell>
                   {tabType !== 'general' && showVerticalColumn && (
@@ -571,90 +557,95 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
                   </TableCell>
                   
                   {/* Script button */}
-                  <TableCell className={styles.centered}>
-                    {isValidUrl(demo.scriptUrl) ? (
-                      <Button
-                        variant="contained"
-                        size="small"
-                        onClick={() => window.open(demo.scriptUrl, '_blank', 'noopener,noreferrer')}
-                        sx={{ 
-                          minWidth: '80px',
-                          width: '80px',
-                          bgcolor: '#4caf50',
-                          color: 'white',
-                          '&:hover': {
-                            bgcolor: '#388e3c'
-                          }
-                        }}
-                      >
-                        Script
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="contained"
-                        size="small"
-                        disabled
-                        sx={{ 
-                          minWidth: '80px',
-                          width: '80px',
-                          bgcolor: '#f44336',
-                          color: 'white',
-                          '&:hover': {
-                            bgcolor: '#d32f2f'
-                          },
-                          '&.Mui-disabled': {
+                  {tabType !== 'client-specific' && (
+                    <TableCell className={styles.centered}>
+                      {isValidUrl(demo.scriptUrl) ? (
+                        <Button
+                          variant="contained"
+                          size="small"
+                          onClick={() => window.open(demo.scriptUrl, '_blank', 'noopener,noreferrer')}
+                          sx={{ 
+                            minWidth: '80px',
+                            width: '80px',
+                            bgcolor: '#4caf50',
+                            color: 'white',
+                            '&:hover': {
+                              bgcolor: '#388e3c'
+                            }
+                          }}
+                        >
+                          Script
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="contained"
+                          size="small"
+                          disabled
+                          sx={{ 
+                            minWidth: '80px',
+                            width: '80px',
                             bgcolor: '#f44336',
-                            color: 'white'
-                          }
-                        }}
-                      >
-                        Missing
-                      </Button>
-                    )}
-                  </TableCell>
+                            color: 'white',
+                            '&:hover': {
+                              bgcolor: '#d32f2f'
+                            },
+                            '&.Mui-disabled': {
+                              bgcolor: '#f44336',
+                              color: 'white'
+                            }
+                          }}
+                        >
+                          Missing
+                        </Button>
+                      )}
+                    </TableCell>
+                  )}
                   
                   {/* Recording button */}
-                  <TableCell className={styles.centered}>
-                    {isValidUrl(demo.recordingUrl) ? (
-                      <Button
-                        variant="contained"
-                        size="small"
-                        onClick={() => window.open(demo.recordingUrl, '_blank', 'noopener,noreferrer')}
-                        sx={{ 
-                          minWidth: '80px',
-                          width: '80px',
-                          bgcolor: '#4caf50',
-                          color: 'white',
-                          '&:hover': {
-                            bgcolor: '#388e3c'
-                          }
-                        }}
-                      >
-                        Recording
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="contained"
-                        size="small"
-                        disabled
-                        sx={{ 
-                          minWidth: '80px',
-                          width: '80px',
-                          bgcolor: '#f44336',
-                          color: 'white',
-                          '&:hover': {
-                            bgcolor: '#d32f2f'
-                          },
-                          '&.Mui-disabled': {
+                  {tabType !== 'client-specific' && (
+                    <TableCell className={styles.centered}>
+                      {isValidUrl(demo.recordingUrl) ? (
+                        <Button
+                          variant="contained"
+                          size="small"
+                          onClick={() => window.open(demo.recordingUrl, '_blank', 'noopener,noreferrer')}
+                          sx={{ 
+                            minWidth: '80px',
+                            width: '80px',
+                            bgcolor: '#4caf50',
+                            color: 'white',
+                            '&:hover': {
+                              bgcolor: '#388e3c'
+                            }
+                          }}
+                        >
+                          Recording
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="contained"
+                          size="small"
+                          disabled
+                          sx={{ 
+                            minWidth: '80px',
+                            width: '80px',
                             bgcolor: '#f44336',
-                            color: 'white'
-                          }
-                        }}
-                      >
-                        Missing
-                      </Button>
-                    )}
-                  </TableCell>
+                            color: 'white',
+                            '&:hover': {
+                              bgcolor: '#d32f2f'
+                            },
+                            '&.Mui-disabled': {
+                              bgcolor: '#f44336',
+                              color: 'white'
+                            }
+                          }}
+                        >
+                          Missing
+                        </Button>
+                      )}
+                    </TableCell>
+                  )}
+                
                   
                   <TableCell>
                     {demo.dueDate 
@@ -680,7 +671,7 @@ export default function DemoTable({ demos, verticals, clients, statuses, tabType
             ) : (
               <TableRow>
                 <TableCell 
-                  colSpan={8 + (showClientColumn ? 1 : 0) + (showVerticalColumn ? 1 : 0)} 
+                  colSpan={8 + (showClientColumn ? 1 : 0) + (showVerticalColumn ? 1 : 0) - (tabType === 'client-specific' ? 2 : 0)} 
                   className={styles.emptyMessage}
                 >
                   No demos found matching the current filters

@@ -21,13 +21,14 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await auth0.getSession();
+  const invisibleUser = session?.user?.email?.includes('invisible.email')
 
   return (
     <html lang="en">
       <body className={inter.className} style={{ backgroundColor: '#f5f5f5' }}>
         <ThemeRegistry>
           <CssBaseline />
-          {session ? (
+          {session && invisibleUser ? (
             // Show full app layout when authenticated
             <Box sx={{ display: 'flex', minHeight: '100vh' }}>
               <AppBar />

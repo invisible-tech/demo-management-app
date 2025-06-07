@@ -96,6 +96,11 @@ async function DemoListWrapper({
     }
     
     return true
+  }).sort((a, b) => {
+    // Sort alphabetically by title (case-insensitive)
+    const titleA = (a.title || 'Untitled Demo').toLowerCase()
+    const titleB = (b.title || 'Untitled Demo').toLowerCase()
+    return titleA.localeCompare(titleB)
   })
 
   // Extract unique values for filter dropdowns
